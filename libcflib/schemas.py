@@ -27,11 +27,6 @@ SCHEMAS = {
                  '_description': 'Core file, name verson '
                                  'deps',
                  'type': 'dict'},
-             'PRed': {'_description': 'For each migrator which track which '
-                                      'PRs have been issued',
-                      'type': 'dict',
-                      'schema': {'migrator': 'string',
-                                 'metadata': 'dict'}}
              }},
     'package': {'_description': 'Schema for the package',
                 'type': 'dict',
@@ -57,5 +52,8 @@ SCHEMAS = {
                     'req': {'_description': 'The requirements. Note that this'
                                             'is a superset of all the latest'
                                             'artifacts dependencies',
-                            'type': 'set'}
+                            'type': 'set'},
+                    'versions': {'_description': 'The versions for this '
+                                                 'package',
+                                 'type': 'list'}
                 }}}
