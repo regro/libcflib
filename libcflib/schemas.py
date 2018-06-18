@@ -5,13 +5,13 @@ schemas = {'node': {'_description': 'Schema for the node',
                     'schema':
                         {'name': {'_description': 'Name of the package',
                                   'type': 'dict'},
-                         'meta_yaml':
+                         'rendered':
                              {
                                  '_description': 'The rendered meta.yaml, '
                                                  'this is usually rendered '
                                                  'on linux',
                                  'type': 'dict'},
-                         'raw_meta_yaml': {
+                         'raw_recipe': {
                              '_description': 'The raw meta.yaml used in the '
                                              'package',
                              'type': 'string'},
@@ -22,5 +22,10 @@ schemas = {'node': {'_description': 'Schema for the node',
                                                      'for this node, note'
                                                      'that "latest" is the'
                                                      'latest version',
-                                     'type': 'string'}
+                                     'type': 'string'},
+                         'about': {'_description': 'metadata about the package',
+                                   'type': 'dict'},
+                         'index': {'_description': 'Core file, name verson '
+                                                   'deps',
+                                   'type': 'dict'}
                          }}}
