@@ -7,6 +7,7 @@ import tornado.web
 import tornado.ioloop
 
 import libcflib.rest.handlers
+from libcflib.logger import LOGGER
 from libcflib.rest.request_handler import RequestHandler
 
 
@@ -29,11 +30,14 @@ def run_application(ns):
     # construct the app
     app = tornado.web.Application(handlers)
     serv = app.listen(ns.port)
+    data = vars(ns)
     url = 'http://localhost:' + str(ns.port)
+    LOGGER.log('starting libcflib-rest ' + url, category='rest-server', data=data)
     try:
         tornado.ioloop.IOLoop.current().start()
     except KeyboardInterrupt:
         print()
+    LOGGER.log('stopping libcflib-rest ' + url, category='rets-server', data=data)
 
 
 def main(args=None):
