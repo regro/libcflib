@@ -44,7 +44,7 @@ class RequestHandler(tornado.web.RequestHandler):
 
     def write(self, chunk):
         """Writes the given chunk to the output buffer. This overrides (and almost
-        completely reimplements) ``tornado.web.RequestHandler.write() so that we
+        completely reimplements) tornado.web.RequestHandler.write() so that we
         can use the default fixie JSON tools.
         """
         if self._finished:
