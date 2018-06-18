@@ -13,6 +13,8 @@ class RequestHandler(tornado.web.RequestHandler):
     This class is meant to be subclassed.
     """
 
+    route = None
+
     @property
     def validator(self):
         v = getattr(self.__class__, '_validator', None)
