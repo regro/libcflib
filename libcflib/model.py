@@ -1,13 +1,13 @@
 """Module for representing entities of the graph"""
-import json
 import os
-from collections.abc import MutableMapping
+import json
 from typing import Iterator
+from collections.abc import MutableMapping
 
 
 class Artifact(MutableMapping):
     """Representation of an artifact via a lazy json load"""
-    EXCLUDE_LOAD = ['loaded', 'args']
+    EXCLUDE_LOAD = frozenset(['loaded', 'args'])
 
     def __init__(self, *args):
         self.loaded = False
@@ -49,4 +49,3 @@ class Artifact(MutableMapping):
             with open(os.path.join(*self.args), 'r') as f:
                 self.loaded = True
                 self.update(json.load(f))
-
