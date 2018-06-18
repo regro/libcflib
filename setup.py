@@ -12,7 +12,7 @@ install_reqs = install_reqs.split()
 
 setup_kwargs = {
     "name": 'libcflib',
-    "packages": ['libcflib'],
+    "packages": ['libcflib', 'libcflib.rest'],
     "long_description": open('README.md').read(),
     "version": VERSION,
     "description": 'Library Conda Forge Library',
