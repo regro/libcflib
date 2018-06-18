@@ -7,7 +7,7 @@ from typing import Iterator
 
 class Artifact(MutableMapping):
     """Representation of an artifact via a lazy json load"""
-    EXCLUDE_LOAD = ['loaded', 'name', 'folder']
+    EXCLUDE_LOAD = ['loaded', 'args']
 
     def __init__(self, *args):
         self.loaded = False
