@@ -24,7 +24,7 @@ def run_application(ns):
     # first, find the request handler
     handlers = []
     for var in vars(libcflib.rest.handlers).values():
-        if issubclass(var, RequestHandler):
+        if isinstance(var, type) and issubclass(var, RequestHandler):
             handlers.append((var.route, var))
     # construct the app
     app = tornado.web.Application(handlers)
@@ -37,7 +37,6 @@ def run_application(ns):
 
 
 def main(args=None):
-    args = sys.argv if args is None else args
     p = make_parser()
     ns = p.parse_args(args)
     ns.args = args
