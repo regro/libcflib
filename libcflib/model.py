@@ -9,10 +9,9 @@ class Artifact(MutableMapping):
     """Representation of an artifact via a lazy json load"""
     EXCLUDE_LOAD = ['loaded', 'name', 'folder']
 
-    def __init__(self, name, folder):
+    def __init__(self, *args):
         self.loaded = False
-        self.name = name
-        self.folder = folder
+        self.args = args[:-1] + ((args[-1] + '.json'), )
         super().__init__()
 
     def __iter__(self) -> Iterator:
@@ -47,7 +46,7 @@ class Artifact(MutableMapping):
     # TODO: make this into a decorator
     def _load(self):
         if not self.loaded:
-            with open(os.path.join(self.folder, self.name+'.json'), 'r') as f:
+            with open(os.path.join(*self.args), 'r') as f:
                 self.loaded = True
                 self.update(json.load(f))
 
