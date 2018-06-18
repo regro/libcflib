@@ -1,3 +1,3 @@
-from fixie.main import main
+from libcflib.rest.main import main
 
 main()

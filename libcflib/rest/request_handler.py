@@ -1,4 +1,4 @@
-"""A request handler for fixie that expects JSON data and validates it."""
+"""A request handler for libcflib that expects JSON data and validates it."""
 import cerberus
 import tornado.web
 from tornado.escape import utf8
@@ -47,7 +47,7 @@ class RequestHandler(tornado.web.RequestHandler):
     def write(self, chunk):
         """Writes the given chunk to the output buffer. This overrides (and almost
         completely reimplements) tornado.web.RequestHandler.write() so that we
-        can use the default fixie JSON tools.
+        can use the default libcflic JSON tools.
         """
         if self._finished:
             raise RuntimeError("Cannot write() after finish()")
