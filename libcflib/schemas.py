@@ -1,4 +1,4 @@
-schemas = {
+SCHEMAS = {
     'artifact': {
         '_description': 'Schema for the package artifact',
         'type': 'dict',
@@ -47,5 +47,15 @@ schemas = {
                                                  'archived',
                                  'type': 'bool'},
                     'artifacts': {'_description': 'Links to the artifacts',
-                                  'type': 'list'}
+                                  'type': 'list'},
+                    'bad': {'_description': 'Reason why the packages is bad',
+                            'type': 'string'},
+                    'harvest_time': {'_description': 'UTC time when the '
+                                                     'artifacts were '
+                                                     'harvested',
+                                     'type': 'int'},
+                    'req': {'_description': 'The requirements. Note that this'
+                                            'is a superset of all the latest'
+                                            'artifacts dependencies',
+                            'type': 'set'}
                 }}}

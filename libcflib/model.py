@@ -1,12 +1,19 @@
+"""Module for representing entities of the graph"""
 import json
 import os
-
 from collections.abc import MutableMapping
 from typing import Iterator
 
 
-class Node(MutableMapping):
+class Artifact(MutableMapping):
+    """Representation of an artifact via a lazy json load"""
     EXCLUDE_LOAD = ['loaded', 'name', 'folder']
+
+    def __init__(self, name, folder):
+        self.loaded = False
+        self.name = name
+        self.folder = folder
+        super().__init__()
 
     def __iter__(self) -> Iterator:
         self._load()
@@ -30,12 +37,6 @@ class Node(MutableMapping):
         if k not in self.EXCLUDE_LOAD:
             self._load()
         self.__dict__[k] = v
-
-    def __init__(self, name, folder):
-        self.loaded = False
-        self.name = name
-        self.folder = folder
-        super().__init__()
 
     def __getattr__(self, item):
         return self[item]
