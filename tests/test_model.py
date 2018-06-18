@@ -9,6 +9,6 @@ def test_node(tmpdir):
     with open(os.path.join(tmpdir, 'a.json'), 'w') as f:
         json.dump(d, f)
 
-    n = Artifact(name='a', folder=tmpdir)
+    n = Artifact(tmpdir, 'a')
     assert n.a == 'hi'
     assert n['a'] == 'hi'
