@@ -1,0 +1,30 @@
+version: 2
+
+jobs:
+  build_cf:
+    working_directory: ~/repo
+    docker:
+      - image: continuumio/miniconda3:latest
+    steps:
+      - checkout
+      - run:
+          name: Update Conda
+          command: |
+            conda config --set always_yes True
+            conda config --add channels conda-forge
+            conda update --all
+            conda install --file requirements/run.txt requirements/tests.txt
+      - run:
+          name: Run Tests
+          command: |
+            pytest
+            flake8
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build_cf:
+          filters:
+            branches:
+              ignore: master
