@@ -11,3 +11,4 @@ def test_node(tmpdir):
 
     n = Node(name='a', folder=tmpdir)
     assert n.a == 'hi'
+    assert n['a'] == 'hi'
