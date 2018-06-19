@@ -63,7 +63,7 @@ class DB:
             results = searcher.search()
             for result in results:
                 if result not in self.cache:
-                    data = self.get_data(result)
+                    data = self.get_artifact(result)
                     self.cache[result] = data
                     # Cache the time so we can timeout the record
                     self.times[result] = time.time()
@@ -71,7 +71,7 @@ class DB:
                     data = self.cache[results]
                 yield data
 
-    def get_data(self, data):
+    def get_artifact(self, data):
         """Get the artifact data from the database
 
         Parameters
