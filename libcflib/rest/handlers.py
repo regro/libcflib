@@ -10,7 +10,7 @@ class Artifact(RequestHandler):
 
     route = "/artifact"
     schema = {
-        "package": NON_EMPTY_STR.copy(),
+        "pkg": NON_EMPTY_STR.copy(),
         "channel": NON_EMPTY_STR.copy(),
         "arch": NON_EMPTY_STR.copy(),
         "name": NON_EMPTY_STR.copy(),

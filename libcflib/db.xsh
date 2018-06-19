@@ -18,6 +18,7 @@ class DB:
         # make the db a singleton
         if DB.__inst is None:
             DB.__inst = object.__new__(cls)
+            DB.__inst._initialized = False
         return DB.__inst
 
     def __init__(self, cache_size=None):
@@ -33,6 +34,8 @@ class DB:
         All rights reserved.
 
         """
+        if self._initialized:
+            return
         if os.path.exists($LIBCFGRAPH_DIR):
             with indir($LIBCFGRAPH_DIR):
                 git pull $LIBCFGRAPH_URL master
@@ -43,6 +46,7 @@ class DB:
         self.lru = zict.LRU(cache_size, self.cache)
         self.times = {}
         self._packages = {}
+        self._initialized = True
 
     def _build_whoosh(self):
         self.idx = 'whoosh'
