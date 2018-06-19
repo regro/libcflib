@@ -1,5 +1,7 @@
-from whoosh.fields import (FieldType, Schema, TEXT, KEYWORD, BOOLEAN,
-                           NUMERIC)
+import sys
+
+from whoosh.fields import (FieldType, Schema, FieldConfigurationError, TEXT,
+                           KEYWORD, BOOLEAN, NUMERIC)
 
 
 TYPE_MAP = {'string': TEXT,
@@ -29,10 +31,18 @@ TYPE_MAP['dict'] = DICT
 
 
 class NestedSchema(Schema):
+    def __init__(self, schema, **fields):
+        self.schema = schema
+        super().__init__(**fields)
+
     def add(self, name, fieldtype, glob=False):
         # If the user passed a type rather than an instantiated field object,
         # instantiate it automatically
         if type(fieldtype) is type:
+            try:
+                fieldtype = fieldtype(schema=self.schema)
+            except TypeError:
+                pass
             try:
                 fieldtype = fieldtype()
             except:
