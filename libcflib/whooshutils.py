@@ -35,7 +35,7 @@ def add_from(index, docs):
     writer.commit()
 
 
-def search(index, **kwargs):
+def search(index, query):
     ix = get_index(index)
     with ix.searcher() as searcher:
-        return searcher.document(**kwargs)
+        return searcher.document(**query)
