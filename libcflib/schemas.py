@@ -4,7 +4,7 @@ SCHEMAS = {
         'type': 'dict',
         'schema':
             {'name': {'_description': 'Name of the package',
-                      'type': 'dict'},
+                      'type': 'string'},
              'rendered':
                  {
                      '_description': 'The rendered meta.yaml, this is usually '
