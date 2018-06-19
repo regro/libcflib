@@ -1,5 +1,7 @@
 # Copyright 2007 Matt Chaput. All rights reserved.
 import sys
+import re
+import fnmatch
 
 from whoosh.fields import (FieldType, Schema, FieldConfigurationError, TEXT,
                            KEYWORD, BOOLEAN, NUMERIC)
