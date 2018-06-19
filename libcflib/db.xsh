@@ -18,7 +18,7 @@ class DB:
             DB.__inst = object.__new__(cls)
         return DB.__inst
 
-    def __init__(self, cache_size=1e6):
+    def __init__(self, cache_size=1000000):
         """
 
         Parameters
@@ -41,7 +41,6 @@ class DB:
 
     def _build_whoosh(self):
         self.idx = 'whoosh'
-
 
     def search(self, **kwargs):
         """Search the database
@@ -71,7 +70,6 @@ class DB:
                 else:
                     data = self.cache[results]
                 yield data
-
 
     def get_data(self, data):
         """Get the artifact data from the database
