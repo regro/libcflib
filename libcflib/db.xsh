@@ -34,7 +34,7 @@ class DB:
         if os.path.exists($LIBCFGRAPH_DIR):
             git pull $LIBCFGRAPH_URL master
         else:
-            git clone $LIBCFGRAPH_URL $LIBCFGRAPH_DIR --depth 1
+            git clone $LIBCFGRAPH_URL $LIBCFGRAPH_DIR
         self.cache = {}
         cache_size = $LIBCFLIB_DB_CACHE_SIZE if cache_size is None else cache_size
         self.lru = zict.LRU(cache_size, self.cache)
