@@ -5,7 +5,7 @@ import time
 import toolz
 import zict
 
-from .tools import indir
+from libcflib.tools import indir
 from libcflib.model import Artifact, Package
 
 
