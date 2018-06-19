@@ -1,6 +1,5 @@
 import os.path
 from whoosh.index import open_dir, exists_in, create_in
-from whoosh.qparser import QueryParser
 from whoosh.fields import (Schema, TEXT, KEYWORD, BOOLEAN, NUMERIC, STORED,
                            ID)
 
@@ -44,3 +43,9 @@ def add_from(index, docs):
         doc = {k: v for k, v in doc.items() if k in ix.schema.names()}
         writer.add_document(**doc)
     writer.commit()
+
+
+def search(index, **kwargs):
+    ix = get_index(index)
+    with ix.searcher() as searcher:
+        return searcher.document(**kwargs)
