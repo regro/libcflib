@@ -13,7 +13,7 @@ jobs:
             conda config --set always_yes True
             conda config --add channels conda-forge
             conda update --all
-            conda install --file requirements/run.txt requirements/tests.txt
+            conda install --file requirements/run.txt --file requirements/tests.txt
       - run:
           name: Install libcflib
           command: |
