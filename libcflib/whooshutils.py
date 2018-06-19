@@ -4,19 +4,9 @@ from whoosh.fields import (Schema, TEXT, KEYWORD, BOOLEAN, NUMERIC, STORED,
                            ID)
 
 
-SCHEMA = Schema(name=ID(stored=True),
-                archived=BOOLEAN,
-                bad=TEXT,
-                harvest_time=NUMERIC,
-                req=KEYWORD,
-                versions=KEYWORD,
-                PRed=STORED,
-                artifacts=STORED)
-
-
 def get_index(index, schema=SCHEMA):
-    if not os.path.exists('index'):
-        os.mkdir('index')
+    if not os.path.exists(index):
+        os.mkdir(index)
     if exists_in(index):
         return open_dir(index)
     else:
