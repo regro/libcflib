@@ -5,6 +5,8 @@ Harvests metadata out of a built conda package
 import tarfile
 import os
 import json
+from ruamel_yaml.scanner import ScannerError
+
 import io
 import sys
 
@@ -27,15 +29,31 @@ def harvest(io_like):
     # info/files
     file_listing = tf.extractfile('info/files').readlines()
     file_listing = (fn.decode('utf8').strip() for fn in file_listing if fn)
-    file_listing = [filter_file(fn) for fn in file_listing]
+    file_listing = [fn for fn in file_listing if filter_file(fn)]
 
     # info/recipe/meta.yaml
-    rendered_recipe = ruamel_yaml.safe_load(tf.extractfile('info/recipe/meta.yaml'))
-    raw_recipe = tf.extractfile('info/recipe/meta.yaml.template').read().decode('utf8')
-    conda_build_config = ruamel_yaml.safe_load(
-        tf.extractfile('info/recipe/conda_build_config.yaml'))
-    about = json.load(tf.extractfile('info/about.json'))
-    index = json.loads(tf.extractfile('info/index.json'))
+    try:
+        rendered_recipe = ruamel_yaml.safe_load(tf.extractfile('info/recipe/meta.yaml'))
+    except ScannerError:
+        # Non parseable
+        rendered_recipe = {}
+
+    try:
+        raw_recipe = tf.extractfile('info/recipe/meta.yaml.template').read().decode('utf8')
+    except KeyError:
+        raw_recipe = tf.extractfile('info/recipe/meta.yaml').read().decode('utf8')
+
+    try:
+        conda_build_config = ruamel_yaml.safe_load(
+            tf.extractfile('info/recipe/conda_build_config.yaml'))
+    except KeyError:
+        conda_build_config = {}
+
+    try:
+        about = json.load(tf.extractfile('info/about.json'))
+    except KeyError:
+        about = {}
+    index = json.load(tf.extractfile('info/index.json'))
 
     return {
         'name': index['name'],
