@@ -13,7 +13,7 @@ class Package(object):
         self.name = name
         self.artifacts = defaultdict(lambda: defaultdict(set))
         for a in artifact_ids:
-            channel, arch, artifact_name = a.split('/', 2)
+            _, channel, arch, artifact_name = a.split('/', 3)
             self.artifacts[channel][arch].add(artifact_name)
 
     def __repr__(self):

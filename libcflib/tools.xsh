@@ -1,11 +1,16 @@
 """Varied and sundry tools for libcflib"""
 import os
+from contextlib import contextmanager
+
 from collections import defaultdict
 from collections.abc import MutableMapping
 
 import jinja2
-from conda_build.config import Config
-from conda_build.metadata import parse
+try:
+    from conda_build.config import Config
+    from conda_build.metadata import parse
+except ImportError:
+    pass
 from xonsh.tools import expand_path
 
 
