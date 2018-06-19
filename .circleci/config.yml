@@ -15,6 +15,10 @@ jobs:
             conda update --all
             conda install --file requirements/run.txt requirements/tests.txt
       - run:
+        name: Install libcflib
+        command: |
+            python setup.py install
+      - run:
           name: Run Tests
           command: |
             pytest
