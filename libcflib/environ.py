@@ -122,13 +122,7 @@ ENVVARS = OrderedDict(
         ),
         (
             "LIBCFLIB_DB_CACHE_SIZE",
-            (
-                1000000,
-                is_int,
-                int,
-                str,
-                "Size of the database LRU cache",
-            ),
+            (1000000, is_int, int, str, "Size of the database LRU cache"),
         ),
     ]
 )

@@ -2,7 +2,7 @@ import pytest
 from libcflib import db
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def db_fixture():
     return db.DB()
 
