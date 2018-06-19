@@ -17,9 +17,9 @@ from xonsh.tools import (
 from libcflib.tools import expand_file_and_mkdirs
 
 
-def csv_to_list(x):
+def csv_to_set(x):
     """Converts a comma separated string to a list of strings."""
-    return x.split(",")
+    return set(x.split(","))
 
 
 def list_to_csv(x):
@@ -133,9 +133,9 @@ ENVVARS = OrderedDict(
         (
             "LIBCFGRAPH_CHANNELS",
             (
-                ["conda-forge"],
+                {"conda-forge"},
                 is_nonstring_seq_of_strings,
-                csv_to_list,
+                csv_to_set,
                 list_to_csv,
                 "The channels tracked by the database",
             ),
@@ -143,9 +143,9 @@ ENVVARS = OrderedDict(
         (
             "LIBCFGRAPH_ARCH",
             (
-                ["linux-64", "ox-64", "win-64", "noarch"],
+                {"linux-64", "ox-64", "win-64", "noarch"},
                 is_nonstring_seq_of_strings,
-                csv_to_list,
+                csv_to_set,
                 list_to_csv,
                 "The arch tracked by the database",
             ),

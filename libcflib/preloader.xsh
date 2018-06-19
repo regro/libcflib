@@ -19,8 +19,8 @@ import tqdm
 from .harvester import harvest
 from .tools import expand_file_and_mkdirs
 
-channel_list = ["https://conda.anaconda.org/{}/{}".format(c, a) for c, a in
-                product($LIBCFGRAPH_CHANNELS, $LIBCFGRAPH_ARCH)]
+channel_list = ("https://conda.anaconda.org/{}/{}".format(c, a) for c, a in
+                product($LIBCFGRAPH_CHANNELS, $LIBCFGRAPH_ARCH))
 
 
 def fetch_arch(arch):

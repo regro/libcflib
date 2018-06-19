@@ -1,3 +1,4 @@
+"""Update the top level graph"""
 import collections.abc
 import hashlib
 import json
@@ -14,7 +15,6 @@ import requests
 from libcflib.chained_db import ChainDB, _convert_to_dict
 from libcflib.tools import parse_meta_yaml, indir
 from libcflib.logger import LOGGER
-
 
 
 def get_attrs(yaml_dict):
