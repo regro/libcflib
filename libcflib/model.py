@@ -162,11 +162,13 @@ class Artifact(MutableMapping):
 
     def _load(self):
         env = builtins.__xonsh_env__
-        filename = os.path.join(env.get("LIBCFGRAPH_DIR"), self._path)
+        filename = os.path.join(env.get("LIBCFGRAPH_DIR"), 'artifacts', self._path)
         with open(filename, "r") as f:
             self._d.update(json.load(f))
         self._loaded = True
 
     def asdict(self,):
         """Returns the dictionary view of the artifact"""
+        if not self._loaded:
+            self._load()
         return self._d
