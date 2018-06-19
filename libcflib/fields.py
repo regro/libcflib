@@ -68,6 +68,9 @@ class NestedSchema(Schema):
                 raise FieldConfigurationError("%r already in schema" % fname)
 
             # Add the field
+            if isinstance(subfield, DICT):
+                self.add(fname, subfield)
+                return
             if glob:
                 expr = re.compile(fnmatch.translate(name))
                 self._dyn_fields[fname] = (expr, subfield)
