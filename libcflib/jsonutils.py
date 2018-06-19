@@ -16,6 +16,8 @@ def default(obj):
         }
     elif isinstance(obj, uuid.UUID):
         return {"__UUID__": True, "value": str(obj)}
+    elif hasattr(obj, 'asdict'):
+        return obj.asdict()
     raise TypeError(repr(obj) + " is not JSON serializable")
 
 

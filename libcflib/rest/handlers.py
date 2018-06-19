@@ -19,4 +19,26 @@ class Artifact(RequestHandler):
     def get(self, *args, **kwargs):
         """GETs an artifact."""
         a = self.db.get_artifact(**self.request.arguments)
-        self.write(a.asdict())
+        self.write(a)
+
+
+class Packages(RequestHandler):
+    """Gets the packages dictionary"""
+
+    route = '/packages'
+    schema = {}
+
+    def get(self, *args, **kwargs):
+        """GETs the packages dict"""
+        self.write(self.db.packages)
+
+
+class Package(RequestHandler):
+    """Gets the packages dictionary"""
+
+    route = '/package'
+    schema = {"pkg": NON_EMPTY_STR.copy()}
+
+    def get(self, *args, **kwargs):
+        """GETs the packages dict"""
+        self.write(self.db.packages[self.request.arguments["pkg"]])

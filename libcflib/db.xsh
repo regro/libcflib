@@ -89,6 +89,13 @@ class DB:
                 p = Package(name=package, artifact_ids=artifact)
                 self._packages[p.name] = p
 
+    @property
+    def packages(self):
+        """The packages dict."""
+        if not self._packages:
+            self.load_packages()
+        return self._packages
+
     def get_artifact(self, **kwargs):
         """Get the artifact from the database.
 

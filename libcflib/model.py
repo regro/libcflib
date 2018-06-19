@@ -18,6 +18,10 @@ class Package(object):
     def __repr__(self):
         return f"Package({self.name}"
 
+    def asdict(self):
+        """Returns the package as a dictionary"""
+        return {'name': self.name, 'artifacts': self.artifacts}
+
 
 class Artifact(MutableMapping):
     """Representation of an artifact via a lazy json load.
