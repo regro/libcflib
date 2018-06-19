@@ -1,13 +1,12 @@
 import os.path
 
 from whoosh.index import open_dir, exists_in, create_in
-from whoosh.fields import Schema
-from libcflib.fields import TYPE_MAP
+from libcflib.fields import TYPE_MAP, NestedSchema
 
 
 def create_whoosh_schema(schema):
     fields = {k: TYPE_MAP[v['type']] for k, v in schema.items()}
-    return Schema(**fields)
+    return NestedSchema(**fields)
 
 
 def get_index(index, schema):
