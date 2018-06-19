@@ -90,7 +90,8 @@ def create_graphs():
                     latest_version = max(map(VersionOrder, g`*.json`[-1]))
                     with open(latest_version + '.json', 'r') as f:
                         art = json.load(f)
-                        parsed_recipe = parse_meta_yaml(art['raw_recipe'])
+                        parsed_recipe = (art['rendered_recipe']
+                                         or parse_meta_yaml(art['raw_recipe']))
                         sub_attrs = get_attrs(parsed_recipe)
                         edge_kwags = dict(arch=arch, channel=channel)
                         for dep in sub_attrs.get('req', []):
