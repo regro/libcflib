@@ -118,6 +118,7 @@ SCHEMAS = {
                 "type": "dict",
             },
             "name": {"schema": {"type": "string"}, "type": "list"},
+            "metadata_version": {"type": "integer"},
             "raw_recipe": {"schema": {"type": "string"}, "type": "list"},
             "rendered_recipe": {
                 "schema": {
