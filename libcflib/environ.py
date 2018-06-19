@@ -58,6 +58,13 @@ def libcflib_logfile():
     return flf
 
 
+def libcfgraph_dir():
+    """Ensures and returns the $LIBCFGRAPH_DIR"""
+    env = builtins.__xonsh_env__
+    s = os.path.join(env.get("LIBCFLIB_DATA_DIR"), "libcfgraph")
+    return s
+
+
 # key = name
 # value = (default, validate, convert, detype, docstr)
 # this needs to be ordered so that the default are applied in the correct order
@@ -91,6 +98,26 @@ ENVVARS = OrderedDict(
                 expand_file_and_mkdirs,
                 ensure_string,
                 "Path to the libcflib logfile.",
+            ),
+        ),
+        (
+            "LIBCFGRAPH_DIR",
+            (
+                libcfgraph_dir,
+                is_string,
+                str,
+                ensure_string,
+                "Path to the libcfgrapgh repository directory.",
+            ),
+        ),
+        (
+            "LIBCFGRAPH_URL",
+            (
+                "https://github.com/regro/libcfgraph.git",
+                is_string,
+                str,
+                ensure_string,
+                "URL to the libcfgrapgh repository.",
             ),
         ),
     ]
