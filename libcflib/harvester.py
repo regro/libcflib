@@ -49,8 +49,11 @@ def harvest(io_like):
     except KeyError:
         conda_build_config = {}
 
-    about = json.load(tf.extractfile('info/about.json'))
-    index = json.loads(tf.extractfile('info/index.json'))
+    try:
+        about = json.load(tf.extractfile('info/about.json'))
+    except KeyError:
+        about = {}
+    index = json.load(tf.extractfile('info/index.json'))
 
     return {
         'name': index['name'],
