@@ -14,6 +14,8 @@ install_reqs = install_reqs.split()
 setup_kwargs = {
     "name": "libcflib",
     "packages": ["libcflib", "libcflib.rest"],
+    "package_dir": {"libcflib": "libcflib", "libcflib.rest": "libcflib/rest"},
+    "package_data": {"libcflib": ["*.xsh"], "libcflib.rest": ["*.xsh"]},
     "long_description": open("README.md").read(),
     "version": VERSION,
     "description": "Library Conda Forge Library",
