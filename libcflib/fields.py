@@ -3,16 +3,25 @@ import sys
 import re
 import fnmatch
 
-from whoosh.fields import (FieldType, Schema, FieldConfigurationError, TEXT,
-                           KEYWORD, BOOLEAN, NUMERIC)
+from whoosh.fields import (
+    FieldType,
+    Schema,
+    FieldConfigurationError,
+    TEXT,
+    KEYWORD,
+    BOOLEAN,
+    NUMERIC,
+)
 
 
-TYPE_MAP = {'string': TEXT,
-            'list': KEYWORD,
-            'set': KEYWORD,
-            'bool': BOOLEAN,
-            'float': NUMERIC(numtype=float),
-            'integer': NUMERIC}
+TYPE_MAP = {
+    'string': TEXT,
+    'list': KEYWORD,
+    'set': KEYWORD,
+    'bool': BOOLEAN,
+    'float': NUMERIC(numtype=float),
+    'integer': NUMERIC,
+}
 
 
 class DICT(FieldType):
@@ -25,7 +34,9 @@ class DICT(FieldType):
     def subfields(self):
         for k, v in self.schema.items():
             try:
-                subfield = self.type_map[v['type']](schema=v['schema'], stored=self.stored)
+                subfield = self.type_map[v['type']](
+                    schema=v['schema'], stored=self.stored
+                )
             except (TypeError, KeyError):
                 subfield = self.type_map[v['type']](stored=self.stored)
             yield k, subfield
@@ -46,12 +57,12 @@ class NestedSchema(Schema):
                 fieldtype = fieldtype()
             except:
                 e = sys.exc_info()[1]
-                raise FieldConfigurationError("Error: %s instantiating field "
-                                                "%r: %r" % (e, name, fieldtype))
+                raise FieldConfigurationError(
+                    "Error: %s instantiating field " "%r: %r" % (e, name, fieldtype)
+                )
 
         if not isinstance(fieldtype, FieldType):
-                raise FieldConfigurationError("%r is not a FieldType object"
-                                              % fieldtype)
+            raise FieldConfigurationError("%r is not a FieldType object" % fieldtype)
 
         self._subfields[name] = sublist = []
         for suffix, subfield in fieldtype.subfields():
