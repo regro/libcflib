@@ -1,3 +1,4 @@
 cerberus
 tornado
 xonsh
+zict
