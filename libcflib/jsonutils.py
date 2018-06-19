@@ -7,7 +7,9 @@ from collections.abc import Set
 
 def default(obj):
     """For custom object serialization."""
-    if isinstance(obj, Set):
+    if hasattr(obj, 'asdict'):
+        return obj.asdict()
+    elif isinstance(obj, Set):
         return {"__set__": True, "elements": sorted(obj)}
     elif isinstance(obj, bytes):
         return {
@@ -16,8 +18,6 @@ def default(obj):
         }
     elif isinstance(obj, uuid.UUID):
         return {"__UUID__": True, "value": str(obj)}
-    elif hasattr(obj, 'asdict'):
-        return obj.asdict()
     raise TypeError(repr(obj) + " is not JSON serializable")
 
 
