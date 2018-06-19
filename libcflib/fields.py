@@ -13,7 +13,7 @@ class DICT(FieldType):
     def __init__(self, schema, stored=False):
         self.schema = schema
 
-    def subfields():
+    def subfields(self):
         for k, v in self.schema.items():
             try:
                 subfield = TYPE_MAP[v['type']](schema=v['schema'], stored=self.stored)
