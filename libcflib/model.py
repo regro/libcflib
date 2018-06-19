@@ -92,3 +92,7 @@ class Artifact(MutableMapping):
         with open(filename, "r") as f:
             self._d.update(json.load(f))
         self._loaded = True
+
+    def asdict(self, ):
+        """Returns the dictionary view of the artifact"""
+        return self._d

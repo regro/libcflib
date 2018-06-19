@@ -17,3 +17,5 @@ def test_node(tmppkgdir):
     n = Artifact(pkg=pkg, channel=channel, arch=arch, name="a")
     assert n.a == "hi"
     assert n["a"] == "hi"
+    # test asdict
+    assert d == n.asdict()

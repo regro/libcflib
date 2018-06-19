@@ -18,3 +18,5 @@ class Artifact(RequestHandler):
 
     def get(self, *args, **kwargs):
         """GETs an artifact."""
+        a = self.db.get_artifact(**self.request.arguments)
+        self.write(a.asdict())
