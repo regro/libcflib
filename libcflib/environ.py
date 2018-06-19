@@ -6,8 +6,13 @@ from contextlib import contextmanager
 from collections.abc import MutableMapping
 
 from xonsh.environ import Ensurer, VarDocs
-from xonsh.tools import (always_false, ensure_string, is_string, is_int,
-                         is_nonstring_seq_of_strings)
+from xonsh.tools import (
+    always_false,
+    ensure_string,
+    is_string,
+    is_int,
+    is_nonstring_seq_of_strings,
+)
 
 from libcflib.tools import expand_file_and_mkdirs
 
@@ -127,15 +132,24 @@ ENVVARS = OrderedDict(
         ),
         (
             "LIBCFGRAPH_CHANNELS",
-            (['conda-forge'], is_nonstring_seq_of_strings, csv_to_list, list_to_csv,
-             "The channels tracked by the database"),
+            (
+                ["conda-forge"],
+                is_nonstring_seq_of_strings,
+                csv_to_list,
+                list_to_csv,
+                "The channels tracked by the database",
+            ),
         ),
         (
             "LIBCFGRAPH_ARCH",
-            (['linux-64', 'ox-64', 'win-64', 'noarch'],
-             is_nonstring_seq_of_strings, csv_to_list, list_to_csv,
-             "The arch tracked by the database")
-        )
+            (
+                ["linux-64", "ox-64", "win-64", "noarch"],
+                is_nonstring_seq_of_strings,
+                csv_to_list,
+                list_to_csv,
+                "The arch tracked by the database",
+            ),
+        ),
     ]
 )
 

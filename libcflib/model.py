@@ -109,6 +109,6 @@ class Artifact(MutableMapping):
             self._d.update(json.load(f))
         self._loaded = True
 
-    def asdict(self, ):
+    def asdict(self,):
         """Returns the dictionary view of the artifact"""
         return self._d
