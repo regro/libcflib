@@ -1,5 +1,6 @@
 """Tests libcflib handler object."""
 import pytest
+
 import tornado.web
 from tornado.httpclient import HTTPError
 
@@ -12,7 +13,7 @@ class ValidationRequest(RequestHandler):
 
     def post(self):
         name = self.request.arguments['name']
-        self.write('My name is '+ name)
+        self.write('My name is ' + name)
 
 
 APP = tornado.web.Application([

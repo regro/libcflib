@@ -6,9 +6,7 @@ from contextlib import contextmanager
 from collections.abc import MutableMapping
 
 from xonsh.environ import Ensurer, VarDocs
-from xonsh.tools import (is_string, ensure_string, always_false, always_true, is_bool,
-                         is_string_set, csv_to_set, set_to_csv, is_nonstring_seq_of_strings,
-                         to_bool, bool_to_str, expand_path, is_int, is_float)
+from xonsh.tools import always_false, ensure_string, is_string
 
 from libcflib.tools import expand_file_and_mkdirs
 
@@ -70,7 +68,7 @@ ENVVARS = OrderedDict([
                            'Path to libcflib data directory')),
     ('LIBCFLIB_LOGFILE', (libcflib_logfile, always_false, expand_file_and_mkdirs,
                           ensure_string, 'Path to the libcflib logfile.')),
-    ])
+])
 
 
 _ENV_SETUP = False

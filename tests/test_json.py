@@ -26,4 +26,3 @@ def test_uuid():
     assert '__UUID__' in obs
     v = jsonutils.loads(obs)
     assert u == v
-

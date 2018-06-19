@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+
 from setuptools import setup
 
 
@@ -26,14 +27,12 @@ setup_kwargs = {
         "Intended Audience :: Developers",
         "Programming Language :: Python",
         "Topic :: Utilities",
-        ],
+    ],
     "zip_safe": False,
-    "data_files": [("", ['LICENSE', 'README.md']),],
+    "data_files": [("", ['LICENSE', 'README.md'])],
     "scripts": [],
     "install_requires": install_reqs,
-    }
+}
 
 if __name__ == '__main__':
-    setup(
-        **setup_kwargs
-        )
+    setup(**setup_kwargs)

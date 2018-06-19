@@ -1,7 +1,5 @@
 """Main function for libcflib REST API server."""
-import sys
 import argparse
-import importlib
 
 import tornado.web
 import tornado.ioloop
@@ -29,7 +27,7 @@ def run_application(ns):
             handlers.append((var.route, var))
     # construct the app
     app = tornado.web.Application(handlers)
-    serv = app.listen(ns.port)
+    app.listen(ns.port)
     data = vars(ns)
     url = 'http://localhost:' + str(ns.port)
     LOGGER.log('starting libcflib-rest ' + url, category='rest-server', data=data)

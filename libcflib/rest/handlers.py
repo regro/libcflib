@@ -17,4 +17,3 @@ class Artifact(RequestHandler):
 
     def get(self, *args, **kwargs):
         """GETs an artifact."""
-
