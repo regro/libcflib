@@ -1,3 +1,4 @@
+# Copyright 2007 Matt Chaput. All rights reserved.
 import sys
 
 from whoosh.fields import (FieldType, Schema, FieldConfigurationError, TEXT,
@@ -21,6 +22,7 @@ class DICT(FieldType):
 
     def subfields(self):
         for k, v in self.schema.items():
+            print(k)
             try:
                 subfield = self.type_map[v['type']](schema=v['schema'], stored=self.stored)
             except (TypeError, KeyError):
