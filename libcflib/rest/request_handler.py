@@ -4,7 +4,7 @@ import cerberus
 import tornado.web
 from tornado.escape import utf8
 
-# from libcflib.db import DB
+from libcflib.db import DB
 import libcflib.jsonutils as json
 
 

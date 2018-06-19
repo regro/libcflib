@@ -72,7 +72,7 @@ class DB:
                     data = self.cache[results]
                 yield data
 
-    def get_artifact(self, *, **kwargs):
+    def get_artifact(self, **kwargs):
         """Get the artifact from the database.
 
         Parameters
