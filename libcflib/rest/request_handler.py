@@ -4,6 +4,7 @@ import cerberus
 import tornado.web
 from tornado.escape import utf8
 
+# from libcflib.db import DB
 import libcflib.jsonutils as json
 
 
@@ -14,6 +15,7 @@ class RequestHandler(tornado.web.RequestHandler):
     This class is meant to be subclassed.
     """
 
+    _db = None
     route = None
 
     @property
@@ -23,6 +25,13 @@ class RequestHandler(tornado.web.RequestHandler):
             v = cerberus.Validator(self.schema)
             self.__class__._validator = v
         return v
+
+    @property
+    def db(self):
+        """Gets the database object"""
+        if self._db is None:
+            self._db = DB()
+        return self._db
 
     def prepare(self):
         self.response = {}

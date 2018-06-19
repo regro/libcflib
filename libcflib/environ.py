@@ -6,7 +6,7 @@ from contextlib import contextmanager
 from collections.abc import MutableMapping
 
 from xonsh.environ import Ensurer, VarDocs
-from xonsh.tools import always_false, ensure_string, is_string
+from xonsh.tools import always_false, ensure_string, is_string, is_int
 
 from libcflib.tools import expand_file_and_mkdirs
 
@@ -118,6 +118,16 @@ ENVVARS = OrderedDict(
                 str,
                 ensure_string,
                 "URL to the libcfgrapgh repository.",
+            ),
+        ),
+        (
+            "LIBCFLIB_DB_CACHE_SIZE",
+            (
+                1000000,
+                is_int,
+                int,
+                str,
+                "Size of the database LRU cache",
             ),
         ),
     ]

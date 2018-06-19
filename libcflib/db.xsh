@@ -18,13 +18,13 @@ class DB:
             DB.__inst = object.__new__(cls)
         return DB.__inst
 
-    def __init__(self, cache_size=1000000):
+    def __init__(self, cache_size=None):
         """
 
         Parameters
         ----------
-        cache_size : int
-            Size of the cache
+        cache_size : int or None, optional
+            Size of the cache, defaults to $LIBCFLIB_DB_CACHE_SIZE
 
         Caching forked from Streamz
         Copyright (c) 2017, Continuum Analytics, Inc. and contributors
@@ -36,6 +36,7 @@ class DB:
         else:
             git clone $LIBCFGRAPH_URL $LIBCFGRAPH_DIR --depth 1
         self.cache = {}
+        cache_size = $LIBCFLIB_DB_CACHE_SIZE if cache_size is None else cache_size
         self.lru = zict.LRU(cache_size, self.cache)
         self.times = {}
 
