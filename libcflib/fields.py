@@ -8,6 +8,7 @@ TYPE_MAP = {'string': TEXT,
             'list': KEYWORD,
             'set': KEYWORD,
             'bool': BOOLEAN,
+            'float': NUMERIC(numtype=float),
             'integer': NUMERIC}
 
 
@@ -56,7 +57,7 @@ class NestedSchema(Schema):
 
         self._subfields[name] = sublist = []
         for suffix, subfield in fieldtype.subfields():
-            fname = name + '.' + suffix
+            fname = name + '.' + suffix if suffix else name
             sublist.append(fname)
 
             # Check field name
