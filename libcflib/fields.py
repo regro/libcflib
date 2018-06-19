@@ -22,7 +22,6 @@ class DICT(FieldType):
 
     def subfields(self):
         for k, v in self.schema.items():
-            print(k)
             try:
                 subfield = self.type_map[v['type']](schema=v['schema'], stored=self.stored)
             except (TypeError, KeyError):
@@ -72,7 +71,7 @@ class NestedSchema(Schema):
             # Add the field
             if isinstance(subfield, DICT):
                 self.add(fname, subfield)
-                return
+                continue
             if glob:
                 expr = re.compile(fnmatch.translate(name))
                 self._dyn_fields[fname] = (expr, subfield)
