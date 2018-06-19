@@ -8,7 +8,7 @@ from libcflib.model import Artifact
 
 
 class DB:
-    """A database interface to the graph information """
+    """A database interface to the graph information"""
 
     __inst = None
 

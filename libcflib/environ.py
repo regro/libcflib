@@ -142,12 +142,14 @@ def setup():
     if _ENV_SETUP:
         return
     env = builtins.__xonsh_env__
+    updates = {}
     for key, (default, validate, convert, detype, docstr) in ENVVARS.items():
         if key in env:
-            del env[key]
+            updates[key] = env.pop(key)
         env._defaults[key] = default() if callable(default) else default
         env._ensurers[key] = Ensurer(validate=validate, convert=convert, detype=detype)
         env._docs[key] = VarDocs(docstr=docstr)
+    env.update(updates)
     _ENV_SETUP = True
 
 
