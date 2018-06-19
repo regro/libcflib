@@ -23,7 +23,7 @@ class DICT(FieldType):
         for k, v in self.schema.items():
             try:
                 subfield = self.type_map[v['type']](schema=v['schema'], stored=self.stored)
-            except (TypeError, NameError):
+            except (TypeError, KeyError):
                 subfield = self.type_map[v['type']](stored=self.stored)
             yield k, subfield
 
@@ -43,13 +43,12 @@ class NestedSchema(Schema):
             try:
                 fieldtype = fieldtype(schema=self.schema)
             except TypeError:
-                pass
-            try:
-                fieldtype = fieldtype()
-            except:
-                e = sys.exc_info()[1]
-                raise FieldConfigurationError("Error: %s instantiating field "
-                                              "%r: %r" % (e, name, fieldtype))
+                try:
+                    fieldtype = fieldtype()
+                except:
+                    e = sys.exc_info()[1]
+                    raise FieldConfigurationError("Error: %s instantiating field "
+                                                  "%r: %r" % (e, name, fieldtype))
 
         if not isinstance(fieldtype, FieldType):
                 raise FieldConfigurationError("%r is not a FieldType object"
