@@ -19,3 +19,5 @@ def test_node(tmppkgdir):
     assert n["a"] == "hi"
     # test asdict
     assert d == n.asdict()
+    # make sure we can hash artifacts
+    hash(n)

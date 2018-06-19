@@ -86,6 +86,9 @@ class Artifact(MutableMapping):
         else:
             self._d[name] = value
 
+    def __hash__(self):
+        return hash(self._path)
+
     def _load(self):
         env = builtins.__xonsh_env__
         filename = os.path.join(env.get("LIBCFGRAPH_DIR"), self._path)
