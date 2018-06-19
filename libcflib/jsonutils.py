@@ -29,17 +29,18 @@ def object_hook(dct):
 
 
 def dumps(obj, sort_keys=True, separators=(',', ':'),
-               default=default, **kwargs):
+          default=default, **kwargs):
     """Returns a JSON string from a Python object."""
     return json.dumps(obj, sort_keys=sort_keys, separators=separators,
                       default=default, **kwargs)
 
 
 def dump(obj, fp, sort_keys=True, separators=(',', ':'),
-               default=default, **kwargs):
+         default=default, **kwargs):
     """Returns a JSON string from a Python object."""
     return json.dump(obj, fp, sort_keys=sort_keys, separators=separators,
                      default=default, **kwargs)
+
 
 def encode(obj, **kwargs):
     """Encodes JSON with forward slash encoding, such as in Tornado."""

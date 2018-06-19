@@ -1,5 +1,6 @@
 """A request handler for libcflib that expects JSON data and validates it."""
 import cerberus
+
 import tornado.web
 from tornado.escape import utf8
 
@@ -54,7 +55,9 @@ class RequestHandler(tornado.web.RequestHandler):
         if not isinstance(chunk, (bytes, str, dict)):
             message = "write() only accepts bytes, unicode, and dict objects"
             if isinstance(chunk, list):
-                message += ". Lists not accepted for security reasons; see http://www.tornadoweb.org/en/stable/web.html#tornado.web.RequestHandler.write"
+                message += (". Lists not accepted for security reasons; see "
+                            "http://www.tornadoweb.org/en/stable/web.html"
+                            "#tornado.web.RequestHandler.write")
             raise TypeError(message)
         if isinstance(chunk, dict):
             chunk = json.encode(chunk) + '\n'

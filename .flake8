@@ -1,0 +1,10 @@
+[flake8]
+max-line-length = 90
+exclude =
+    dist/*
+    build/*
+    *.egg-info
+    */__pycache__/*
+ignore =
+    *.py I100
+    ./libcflib/__init__.py E402

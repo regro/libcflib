@@ -5,9 +5,10 @@ Harvests metadata out of a built conda package
 import tarfile
 import os
 import json
-import ruamel_yaml
 import io
 import sys
+
+import ruamel_yaml
 
 
 def filter_file(filename):
@@ -31,7 +32,8 @@ def harvest(io_like):
     # info/recipe/meta.yaml
     rendered_recipe = ruamel_yaml.safe_load(tf.extractfile('info/recipe/meta.yaml'))
     raw_recipe = tf.extractfile('info/recipe/meta.yaml.template').read().decode('utf8')
-    conda_build_config = ruamel_yaml.safe_load(tf.extractfile('info/recipe/conda_build_config.yaml'))
+    conda_build_config = ruamel_yaml.safe_load(
+        tf.extractfile('info/recipe/conda_build_config.yaml'))
     about = json.load(tf.extractfile('info/about.json'))
     index = json.loads(tf.extractfile('info/index.json'))
 
@@ -57,5 +59,3 @@ if __name__ == '__main__':
     output = io.StringIO()
     ruamel_yaml.dump(o, output)
     print(output.getvalue())
-
-

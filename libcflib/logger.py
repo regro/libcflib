@@ -2,7 +2,6 @@
 import os
 import time
 import builtins
-from collections.abc import Set
 
 from xonsh.tools import print_color
 
