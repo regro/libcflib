@@ -1,10 +1,16 @@
 import os.path
+
 from whoosh.index import open_dir, exists_in, create_in
-from whoosh.fields import (Schema, TEXT, KEYWORD, BOOLEAN, NUMERIC, STORED,
-                           ID)
+from whoosh.fields import Schema
+from libcflib.fields import TYPE_MAP
 
 
-def get_index(index, schema=SCHEMA):
+def create_whoosh_schema(schema):
+    fields = {k: TYPE_MAP[v['type']] for k, v in schema.items()}
+    return Schema(**fields)
+
+
+def get_index(index, schema):
     if not os.path.exists(index):
         os.mkdir(index)
     if exists_in(index):
