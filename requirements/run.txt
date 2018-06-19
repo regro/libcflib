@@ -3,3 +3,4 @@ tornado
 whoosh
 xonsh
 zict
+tqdm
