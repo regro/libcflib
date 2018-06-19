@@ -5,3 +5,4 @@ xonsh
 zict
 tqdm
 toolz
+jinja2
