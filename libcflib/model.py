@@ -13,8 +13,8 @@ class Package(MutableMapping):
     def __init__(self, *, name=None, artifact_ids=None, channel="conda-forge"):
         self.name = name
         self._path = channel + ".json"
-        self._load()
         self._d = {}
+        self._load()
         self.artifacts = defaultdict(lambda: defaultdict(set))
         for a in artifact_ids:
             _, channel, arch, artifact_name = a.split("/", 3)
