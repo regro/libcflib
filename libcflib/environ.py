@@ -13,9 +13,6 @@ from xonsh.tools import (is_string, ensure_string, always_false, always_true, is
 from libcflib.tools import expand_file_and_mkdirs
 
 
-ENV = builtins.__xonsh_env__
-
-
 def csv_to_list(x):
     """Converts a comma separated string to a list of strings."""
     return x.split(',')
@@ -41,21 +38,24 @@ def is_dict_str_str_or_none(x):
 
 def libcflib_config_dir():
     """Ensures and returns the $LIBCFLIB_CONFIG_DIR"""
-    fcd = os.path.expanduser(os.path.join(ENV.get('XDG_CONFIG_HOME'), 'libcflib'))
+    env = builtins.__xonsh_env__
+    fcd = os.path.expanduser(os.path.join(env.get('XDG_CONFIG_HOME'), 'libcflib'))
     os.makedirs(fcd, exist_ok=True)
     return fcd
 
 
 def libcflib_data_dir():
     """Ensures and returns the $LIBCFLIB_DATA_DIR"""
-    fdd = os.path.expanduser(os.path.join(ENV.get('XDG_DATA_HOME'), 'libcflib'))
+    env = builtins.__xonsh_env__
+    fdd = os.path.expanduser(os.path.join(env.get('XDG_DATA_HOME'), 'libcflib'))
     os.makedirs(fdd, exist_ok=True)
     return fdd
 
 
 def libcflib_logfile():
     """Ensures and returns the $LIBCFLIB_LOGFILE"""
-    flf = os.path.join(ENV.get('LIBCFLIB_DATA_DIR'), 'log.json')
+    env = builtins.__xonsh_env__
+    flf = os.path.join(env.get('LIBCFLIB_DATA_DIR'), 'log.json')
     flf = expand_file_and_mkdirs(flf)
     return flf
 
@@ -80,13 +80,14 @@ def setup():
     global _ENV_SETUP
     if _ENV_SETUP:
         return
+    env = builtins.__xonsh_env__
     for key, (default, validate, convert, detype, docstr) in ENVVARS.items():
-        if key in ENV:
-            del ENV[key]
-        ENV._defaults[key] = default() if callable(default) else default
-        ENV._ensurers[key] = Ensurer(validate=validate, convert=convert,
+        if key in env:
+            del env[key]
+        env._defaults[key] = default() if callable(default) else default
+        env._ensurers[key] = Ensurer(validate=validate, convert=convert,
                                      detype=detype)
-        ENV._docs[key] = VarDocs(docstr=docstr)
+        env._docs[key] = VarDocs(docstr=docstr)
     _ENV_SETUP = True
 
 
@@ -94,12 +95,13 @@ def teardown():
     global _ENV_SETUP
     if not _ENV_SETUP:
         return
+    env = builtins.__xonsh_env__
     for key in ENVVARS:
-        ENV._defaults.pop(key)
-        ENV._ensurers.pop(key)
-        ENV._docs.pop(key)
-        if key in ENV:
-            del ENV[key]
+        env._defaults.pop(key)
+        env._ensurers.pop(key)
+        env._docs.pop(key)
+        if key in env:
+            del env[key]
     _ENV_SETUP = False
 
 
@@ -128,6 +130,7 @@ def libcflib_detype_env():
     """Returns a detyped version of the environment containing only the fixie
     environment variables.
     """
+    env = builtins.__xonsh_env__
     keep = libcflib_envvar_names()
-    denv = {k: v for k, v in ENV.detype().items() if k in keep}
+    denv = {k: v for k, v in env.detype().items() if k in keep}
     return denv

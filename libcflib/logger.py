@@ -1,6 +1,7 @@
 """Logging tools for libcflib"""
 import os
 import time
+import builtins
 from collections.abc import Set
 
 from xonsh.tools import print_color
@@ -27,7 +28,7 @@ class Logger:
         Parameters
         ----------
         filename : str or None, optional
-            Path to logfile, if None, defaults to $FIXIE_LOGFILE.
+            Path to logfile, if None, defaults to $LIBCFLIB_LOGFILE.
         """
         self._filename = None
         self.filename = filename
@@ -68,7 +69,7 @@ class Logger:
     def filename(self):
         value = self._filename
         if value is None:
-            value = os.environ.get('LIBCFLIB_LOGFILE', 'log.json')
+            value = builtins.__xonsh_env__.get('LIBCFLIB_LOGFILE')
         return value
 
     @filename.setter
