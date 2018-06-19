@@ -2,9 +2,11 @@
 import os
 import time
 
+import toolz
 import zict
 
-from libcflib.model import Artifact
+from .tools import indir
+from libcflib.model import Artifact, Package
 
 
 class DB:
@@ -32,13 +34,15 @@ class DB:
 
         """
         if os.path.exists($LIBCFGRAPH_DIR):
-            git pull $LIBCFGRAPH_URL master
+            with indir($LIBCFGRAPH_DIR):
+                git pull $LIBCFGRAPH_URL master
         else:
             git clone $LIBCFGRAPH_URL $LIBCFGRAPH_DIR
         self.cache = {}
         cache_size = $LIBCFLIB_DB_CACHE_SIZE if cache_size is None else cache_size
         self.lru = zict.LRU(cache_size, self.cache)
         self.times = {}
+        self._packages = {}
 
     def _build_whoosh(self):
         self.idx = 'whoosh'
@@ -71,6 +75,15 @@ class DB:
                 else:
                     data = self.cache[results]
                 yield data
+
+    def load_packages(self):
+        with indir($LIBCFGRAPH_DIR + '/artifacts/'):
+            artifacts = g`**/*.json`
+            artifacts = sorted(artifacts)
+            groups = toolz.groupby(lambda a: a.split('/')[0], artifacts)
+            for package, artifact in groups.items():
+                p = Package(name=package, artifact_ids=artifact)
+                self._packages[p.name] = p
 
     def get_artifact(self, **kwargs):
         """Get the artifact from the database.

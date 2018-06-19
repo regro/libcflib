@@ -3,7 +3,20 @@ import os
 import json
 import builtins
 from typing import Iterator
+from collections import defaultdict
 from collections.abc import MutableMapping
+
+
+class Package(object):
+    def __init__(self, *, name=None, artifact_ids=None):
+        self.name = name
+        self.artifacts = defaultdict(lambda: defaultdict(set))
+        for a in artifact_ids:
+            _, channel, arch, artifact_name = a.split("/", 3)
+            self.artifacts[channel][arch].add(artifact_name)
+
+    def __repr__(self):
+        return f"Package({self.name}"
 
 
 class Artifact(MutableMapping):
