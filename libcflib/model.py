@@ -73,7 +73,7 @@ class Artifact(MutableMapping):
         del self._d[key]
 
     def __getattr__(self, name):
-        if name.startswith('_') or name in self.__dict__:
+        if name.startswith("_") or name in self.__dict__:
             return self.__dict__[name]
         else:
             if not self._loaded:
@@ -81,7 +81,7 @@ class Artifact(MutableMapping):
             return self._d[name]
 
     def __setattr__(self, name, value):
-        if name.startswith('_') or name in self.__dict__:
+        if name.startswith("_") or name in self.__dict__:
             self.__dict__[name] = value
         else:
             self._d[name] = value
