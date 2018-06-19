@@ -14,18 +14,13 @@ SCHEMA = Schema(name=ID(stored=True),
                 artifacts=STORED)
 
 
-def get_index(index):
+def get_index(index, schema=SCHEMA):
     if not os.path.exists('index'):
         os.mkdir('index')
     if exists_in(index):
         return open_dir(index)
     else:
-        return create_index(index)
-
-
-def create_index(index, schema=SCHEMA):
-    ix = create_in(index, schema)
-    return ix
+        return create_in(index, schema)
 
 
 def add(index, **kwargs):
