@@ -102,6 +102,7 @@ def create_graphs():
             new_graphs[channel].add_node(package, **_convert_to_dict(attrs))
     return new_graphs
 
+
 def update_graphs():
     for k, v in create_graphs():
         with open(k+'.json', 'w') as f:

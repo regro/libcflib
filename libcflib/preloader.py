@@ -2,6 +2,7 @@
 Generate a list of artifacts to write to an output of some kind for further processing
 """
 
+from itertools import product
 import json
 import bz2
 import io
@@ -18,13 +19,8 @@ import tqdm
 from .harvester import harvest
 from .tools import expand_file_and_mkdirs
 
-
-channel_list = [
-    "https://conda.anaconda.org/conda-forge/linux-64",
-    "https://conda.anaconda.org/conda-forge/osx-64",
-    "https://conda.anaconda.org/conda-forge/win-64",
-    "https://conda.anaconda.org/conda-forge/noarch",
-]
+channel_list = ["https://conda.anaconda.org/{}/{}".format(c, a) for c, a in
+                product($LIBCFGRAPH_CHANNELS, $LIBCFGRAPH_ARCH)]
 
 
 def fetch_arch(arch):
