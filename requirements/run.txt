@@ -4,3 +4,4 @@ whoosh
 xonsh
 zict
 tqdm
+toolz
