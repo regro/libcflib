@@ -6,7 +6,12 @@ from libcflib.fields import TYPE_MAP, NestedSchema
 
 def create_whoosh_schema(schema):
     fields = {k: TYPE_MAP[v['type']] for k, v in schema.items()}
-    return NestedSchema(schema, **fields)
+    for f, t in fields.items():
+        try:
+            fields[f] = t(schema=schema[f]['schema'])
+        except (TypeError, KeyError):
+            pass
+    return NestedSchema(**fields)
 
 
 def get_index(index, schema):

@@ -33,8 +33,7 @@ TYPE_MAP['dict'] = DICT
 
 
 class NestedSchema(Schema):
-    def __init__(self, schema, **fields):
-        self.schema = schema
+    def __init__(self, **fields):
         super().__init__(**fields)
 
     def add(self, name, fieldtype, glob=False):
@@ -42,14 +41,11 @@ class NestedSchema(Schema):
         # instantiate it automatically
         if type(fieldtype) is type:
             try:
-                fieldtype = fieldtype(schema=self.schema)
-            except TypeError:
-                try:
-                    fieldtype = fieldtype()
-                except:
-                    e = sys.exc_info()[1]
-                    raise FieldConfigurationError("Error: %s instantiating field "
-                                                  "%r: %r" % (e, name, fieldtype))
+                fieldtype = fieldtype()
+            except:
+                e = sys.exc_info()[1]
+                raise FieldConfigurationError("Error: %s instantiating field "
+                                                "%r: %r" % (e, name, fieldtype))
 
         if not isinstance(fieldtype, FieldType):
                 raise FieldConfigurationError("%r is not a FieldType object"
