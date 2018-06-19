@@ -18,7 +18,7 @@ class RequestHandler(tornado.web.RequestHandler):
 
     @property
     def validator(self):
-        v = getattr(self.__class__, '_validator', None)
+        v = getattr(self.__class__, "_validator", None)
         if v is None:
             v = cerberus.Validator(self.schema)
             self.__class__._validator = v
@@ -32,10 +32,10 @@ class RequestHandler(tornado.web.RequestHandler):
         try:
             data = json.decode(body)
         except ValueError:
-            self.send_error(400, message='Unable to parse JSON.')
+            self.send_error(400, message="Unable to parse JSON.")
             return
         if not self.validator.validate(data):
-            msg = 'Input to ' + self.__class__.__name__ + ' is not valid: '
+            msg = "Input to " + self.__class__.__name__ + " is not valid: "
             msg += str(self.validator.errors)
             self.send_error(400, message=msg)
             return
@@ -43,7 +43,7 @@ class RequestHandler(tornado.web.RequestHandler):
         self.request.arguments.update(data)
 
     def set_default_headers(self):
-        self.set_header('Content-Type', 'application/json')
+        self.set_header("Content-Type", "application/json")
 
     def write(self, chunk):
         """Writes the given chunk to the output buffer. This overrides (and almost
@@ -55,21 +55,23 @@ class RequestHandler(tornado.web.RequestHandler):
         if not isinstance(chunk, (bytes, str, dict)):
             message = "write() only accepts bytes, unicode, and dict objects"
             if isinstance(chunk, list):
-                message += (". Lists not accepted for security reasons; see "
-                            "http://www.tornadoweb.org/en/stable/web.html"
-                            "#tornado.web.RequestHandler.write")
+                message += (
+                    ". Lists not accepted for security reasons; see "
+                    "http://www.tornadoweb.org/en/stable/web.html"
+                    "#tornado.web.RequestHandler.write"
+                )
             raise TypeError(message)
         if isinstance(chunk, dict):
-            chunk = json.encode(chunk) + '\n'
+            chunk = json.encode(chunk) + "\n"
             self.set_header("Content-Type", "application/json; charset=UTF-8")
         chunk = utf8(chunk)
         self._write_buffer.append(chunk)
 
     def write_error(self, status_code, **kwargs):
-        if 'message' not in kwargs:
+        if "message" not in kwargs:
             if status_code == 405:
-                kwargs['message'] = 'Invalid HTTP method.'
+                kwargs["message"] = "Invalid HTTP method."
             else:
-                kwargs['message'] = 'Unknown error.'
+                kwargs["message"] = "Unknown error."
         self.response = kwargs
         self.write(kwargs)

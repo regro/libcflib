@@ -34,21 +34,20 @@ class Logger:
         self._dirty = True
         self._cached_entries = ()
 
-    def log(self, message, category='misc', data=None):
+    def log(self, message, category="misc", data=None):
         """Logs a message, the timestamp, its category, and the
         and any data to the log file.
         """
         self._dirty = True
-        entry = {'message': message, 'timestamp': time.time(),
-                 'category': category}
+        entry = {"message": message, "timestamp": time.time(), "category": category}
         if data is not None:
-            entry['data'] = data
+            entry["data"] = data
 
         # write to log file
         json.appendline(entry, self.filename)
         # write to stdout
-        msg = '{INTENSE_CYAN}' + category + '{PURPLE}:'
-        msg += '{INTENSE_WHITE}' + message + '{NO_COLOR}'
+        msg = "{INTENSE_CYAN}" + category + "{PURPLE}:"
+        msg += "{INTENSE_WHITE}" + message + "{NO_COLOR}"
         print_color(msg)
 
     def load(self):
@@ -68,7 +67,7 @@ class Logger:
     def filename(self):
         value = self._filename
         if value is None:
-            value = builtins.__xonsh_env__.get('LIBCFLIB_LOGFILE')
+            value = builtins.__xonsh_env__.get("LIBCFLIB_LOGFILE")
         return value
 
     @filename.setter

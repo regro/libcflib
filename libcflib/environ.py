@@ -13,12 +13,12 @@ from libcflib.tools import expand_file_and_mkdirs
 
 def csv_to_list(x):
     """Converts a comma separated string to a list of strings."""
-    return x.split(',')
+    return x.split(",")
 
 
 def list_to_csv(x):
     """Converts a list of str to a comma-separated string."""
-    return ','.join(x)
+    return ",".join(x)
 
 
 def is_dict_str_str_or_none(x):
@@ -37,7 +37,7 @@ def is_dict_str_str_or_none(x):
 def libcflib_config_dir():
     """Ensures and returns the $LIBCFLIB_CONFIG_DIR"""
     env = builtins.__xonsh_env__
-    fcd = os.path.expanduser(os.path.join(env.get('XDG_CONFIG_HOME'), 'libcflib'))
+    fcd = os.path.expanduser(os.path.join(env.get("XDG_CONFIG_HOME"), "libcflib"))
     os.makedirs(fcd, exist_ok=True)
     return fcd
 
@@ -45,7 +45,7 @@ def libcflib_config_dir():
 def libcflib_data_dir():
     """Ensures and returns the $LIBCFLIB_DATA_DIR"""
     env = builtins.__xonsh_env__
-    fdd = os.path.expanduser(os.path.join(env.get('XDG_DATA_HOME'), 'libcflib'))
+    fdd = os.path.expanduser(os.path.join(env.get("XDG_DATA_HOME"), "libcflib"))
     os.makedirs(fdd, exist_ok=True)
     return fdd
 
@@ -53,7 +53,7 @@ def libcflib_data_dir():
 def libcflib_logfile():
     """Ensures and returns the $LIBCFLIB_LOGFILE"""
     env = builtins.__xonsh_env__
-    flf = os.path.join(env.get('LIBCFLIB_DATA_DIR'), 'log.json')
+    flf = os.path.join(env.get("LIBCFLIB_DATA_DIR"), "log.json")
     flf = expand_file_and_mkdirs(flf)
     return flf
 
@@ -61,14 +61,40 @@ def libcflib_logfile():
 # key = name
 # value = (default, validate, convert, detype, docstr)
 # this needs to be ordered so that the default are applied in the correct order
-ENVVARS = OrderedDict([
-    ('LIBCFLIB_CONFIG_DIR', (libcflib_config_dir, is_string, str, ensure_string,
-                             'Path to libcflib configuration directory')),
-    ('LIBCFLIB_DATA_DIR', (libcflib_data_dir, is_string, str, ensure_string,
-                           'Path to libcflib data directory')),
-    ('LIBCFLIB_LOGFILE', (libcflib_logfile, always_false, expand_file_and_mkdirs,
-                          ensure_string, 'Path to the libcflib logfile.')),
-])
+ENVVARS = OrderedDict(
+    [
+        (
+            "LIBCFLIB_CONFIG_DIR",
+            (
+                libcflib_config_dir,
+                is_string,
+                str,
+                ensure_string,
+                "Path to libcflib configuration directory",
+            ),
+        ),
+        (
+            "LIBCFLIB_DATA_DIR",
+            (
+                libcflib_data_dir,
+                is_string,
+                str,
+                ensure_string,
+                "Path to libcflib data directory",
+            ),
+        ),
+        (
+            "LIBCFLIB_LOGFILE",
+            (
+                libcflib_logfile,
+                always_false,
+                expand_file_and_mkdirs,
+                ensure_string,
+                "Path to the libcflib logfile.",
+            ),
+        ),
+    ]
+)
 
 
 _ENV_SETUP = False
@@ -83,8 +109,7 @@ def setup():
         if key in env:
             del env[key]
         env._defaults[key] = default() if callable(default) else default
-        env._ensurers[key] = Ensurer(validate=validate, convert=convert,
-                                     detype=detype)
+        env._ensurers[key] = Ensurer(validate=validate, convert=convert, detype=detype)
         env._docs[key] = VarDocs(docstr=docstr)
     _ENV_SETUP = True
 
