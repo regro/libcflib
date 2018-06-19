@@ -11,10 +11,17 @@ from libcflib.rest.request_handler import RequestHandler
 
 def make_parser():
     """Makes and argument parser for fixie."""
-    p = argparse.ArgumentParser('libcflib-rest',
-                                description='REST API server for libcflib')
-    p.add_argument('-p', '--port', default=8888, dest='port', type=int,
-                   help='port to serve the fixie services on.')
+    p = argparse.ArgumentParser(
+        "libcflib-rest", description="REST API server for libcflib"
+    )
+    p.add_argument(
+        "-p",
+        "--port",
+        default=8888,
+        dest="port",
+        type=int,
+        help="port to serve the fixie services on.",
+    )
     return p
 
 
@@ -29,13 +36,13 @@ def run_application(ns):
     app = tornado.web.Application(handlers)
     app.listen(ns.port)
     data = vars(ns)
-    url = 'http://localhost:' + str(ns.port)
-    LOGGER.log('starting libcflib-rest ' + url, category='rest-server', data=data)
+    url = "http://localhost:" + str(ns.port)
+    LOGGER.log("starting libcflib-rest " + url, category="rest-server", data=data)
     try:
         tornado.ioloop.IOLoop.current().start()
     except KeyboardInterrupt:
         print()
-    LOGGER.log('stopping libcflib-rest ' + url, category='rets-server', data=data)
+    LOGGER.log("stopping libcflib-rest " + url, category="rets-server", data=data)
 
 
 def main(args=None):
@@ -45,5 +52,5 @@ def main(args=None):
     run_application(ns)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -8,38 +8,40 @@ from collections.abc import Set
 def default(obj):
     """For custom object serialization."""
     if isinstance(obj, Set):
-        return {'__set__': True, 'elements': sorted(obj)}
+        return {"__set__": True, "elements": sorted(obj)}
     elif isinstance(obj, bytes):
-        return {'__bytes__': 'base64',
-                'value': base64.standard_b64encode(obj).decode('utf-8')}
+        return {
+            "__bytes__": "base64",
+            "value": base64.standard_b64encode(obj).decode("utf-8"),
+        }
     elif isinstance(obj, uuid.UUID):
-        return {'__UUID__': True, 'value': str(obj)}
+        return {"__UUID__": True, "value": str(obj)}
     raise TypeError(repr(obj) + " is not JSON serializable")
 
 
 def object_hook(dct):
     """For custom object deserialization."""
-    if '__set__' in dct:
-        return set(dct['elements'])
-    elif '__bytes__' in dct:
-        return base64.standard_b64decode(dct['value'].encode('utf-8'))
-    elif '__UUID__' in dct:
-        return uuid.UUID(dct['value'])
+    if "__set__" in dct:
+        return set(dct["elements"])
+    elif "__bytes__" in dct:
+        return base64.standard_b64decode(dct["value"].encode("utf-8"))
+    elif "__UUID__" in dct:
+        return uuid.UUID(dct["value"])
     return dct
 
 
-def dumps(obj, sort_keys=True, separators=(',', ':'),
-          default=default, **kwargs):
+def dumps(obj, sort_keys=True, separators=(",", ":"), default=default, **kwargs):
     """Returns a JSON string from a Python object."""
-    return json.dumps(obj, sort_keys=sort_keys, separators=separators,
-                      default=default, **kwargs)
+    return json.dumps(
+        obj, sort_keys=sort_keys, separators=separators, default=default, **kwargs
+    )
 
 
-def dump(obj, fp, sort_keys=True, separators=(',', ':'),
-         default=default, **kwargs):
+def dump(obj, fp, sort_keys=True, separators=(",", ":"), default=default, **kwargs):
     """Returns a JSON string from a Python object."""
-    return json.dump(obj, fp, sort_keys=sort_keys, separators=separators,
-                     default=default, **kwargs)
+    return json.dump(
+        obj, fp, sort_keys=sort_keys, separators=separators, default=default, **kwargs
+    )
 
 
 def encode(obj, **kwargs):
@@ -50,12 +52,12 @@ def encode(obj, **kwargs):
 def appendline(obj, f, **kwargs):
     """Appends a line to a line-oriented JSON file (either str path or file handle)."""
     if isinstance(f, str):
-        with open(f, 'a+') as fp:
+        with open(f, "a+") as fp:
             dump(obj, fp, **kwargs)
-            fp.write('\n')
+            fp.write("\n")
     else:
         dump(obj, f, **kwargs)
-        f.write('\n')
+        f.write("\n")
 
 
 def loads(s, object_hook=object_hook, **kwargs):
@@ -69,7 +71,7 @@ def load(fp, object_hook=object_hook, **kwargs):
 
 
 def decode(s, **kwargs):
-    if hasattr(s, 'decode'):
+    if hasattr(s, "decode"):
         # handle bytes, if needed
         s = s.decode("utf-8")
     return loads(s, **kwargs)
