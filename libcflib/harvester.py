@@ -5,6 +5,8 @@ Harvests metadata out of a built conda package
 import tarfile
 import os
 import json
+from ruamel_yaml.scanner import ScannerError
+
 import io
 import sys
 
@@ -30,8 +32,16 @@ def harvest(io_like):
     file_listing = [fn for fn in file_listing if filter_file(fn)]
 
     # info/recipe/meta.yaml
-    rendered_recipe = ruamel_yaml.safe_load(tf.extractfile('info/recipe/meta.yaml'))
-    raw_recipe = tf.extractfile('info/recipe/meta.yaml.template').read().decode('utf8')
+    try:
+        rendered_recipe = ruamel_yaml.safe_load(tf.extractfile('info/recipe/meta.yaml'))
+    except ScannerError:
+        # Non parseable
+        rendered_recipe = {}
+
+    try:
+        raw_recipe = tf.extractfile('info/recipe/meta.yaml.template').read().decode('utf8')
+    except KeyError:
+        raw_recipe = tf.extractfile('info/recipe/meta.yaml').read().decode('utf8')
 
     try:
         conda_build_config = ruamel_yaml.safe_load(
