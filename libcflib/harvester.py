@@ -2,15 +2,16 @@
 Harvests metadata out of a built conda package
 """
 
-import tarfile
-import os
-import json
-from ruamel_yaml.scanner import ScannerError
-
 import io
+import json
+import os
 import sys
+import tarfile
 
+from ruamel_yaml.scanner import ScannerError
 import ruamel_yaml
+
+METADATA_VERSION = 1
 
 
 def filter_file(filename):
@@ -59,6 +60,7 @@ def harvest(io_like):
     index = json.load(tf.extractfile("info/index.json"))
 
     return {
+        "metadata_version": METADATA_VERSION,
         "name": index["name"],
         "version": index["version"],
         "index": index,
