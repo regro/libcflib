@@ -53,7 +53,7 @@ def recursive_ls(root):
     for p in packages:
         files = glob.glob(f'{root}/{p}/*/*/*.json')
         for f in files:
-            yield p, f.replace(f'{root}/{p}', '')
+            yield p, f.replace(f'{root}/{p}/', '')
 
 
 def existing(path, recursive_ls=recursive_ls) -> Dict[str, Set[str]]:
@@ -103,7 +103,11 @@ def reap(path):
                 package, dst, src_url in sorted_files
         ]
         for f in as_completed(futures):
-            pass
+            try:
+                f.result()
+            except Exception as e:
+                print(str(e))
+                raise
 
 
 if __name__ == '__main__':
