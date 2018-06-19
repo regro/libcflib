@@ -1,5 +1,6 @@
 """Database for accessing graph information"""
 import os
+import time
 
 import zict
 
@@ -7,9 +8,7 @@ from libcflib.model import Artifact
 
 
 class DB:
-    """A logging object for fixie that stores information in line-oriented JSON
-    format.
-    """
+    """A database interface to the graph information """
 
     __inst = None
 
@@ -38,6 +37,7 @@ class DB:
             git clone $LIBCFGRAPH_URL $LIBCFGRAPH_DIR --depth 1
         self.cache = {}
         self.lru = zict.LRU(cache_size, self.cache)
+        self.times = {}
 
     def _build_whoosh(self):
         self.idx = 'whoosh'
@@ -66,9 +66,12 @@ class DB:
                 if result not in self.cache:
                     data = self.get_data(result)
                     self.cache[result] = data
+                    # Cache the time so we can timeout the record
+                    self.times[result] = time.time()
                 else:
                     data = self.cache[results]
                 yield data
+
 
     def get_data(self, data):
         """Get the artifact data from the database
