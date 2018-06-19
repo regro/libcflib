@@ -1,6 +1,7 @@
 """Module for representing entities of the graph"""
 import os
 import json
+import builtins
 from typing import Iterator
 from collections.abc import MutableMapping
 
