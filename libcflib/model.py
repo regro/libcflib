@@ -10,10 +10,10 @@ class Artifact(MutableMapping):
     Either the filename path or the pkg, channel, arch, and name
     must be given.
     """
-    EXCLUDE_LOAD = frozenset(['loaded', 'args'])
 
-    def __init__(self, *, pkg=None, channel=None, arch=None, name=None,
-                 path=None):
+    EXCLUDE_LOAD = frozenset(["loaded", "args"])
+
+    def __init__(self, *, pkg=None, channel=None, arch=None, name=None, path=None):
         """
         Parameters
         ----------
@@ -31,15 +31,19 @@ class Artifact(MutableMapping):
         self.loaded = False
         if path is not None:
             self.path = path
-        elif (pkg is not None and channel is not None and
-              arch is not None and name is not None):
-            if name.endswith('.tar.bz2'):
+        elif (
+            pkg is not None
+            and channel is not None
+            and arch is not None
+            and name is not None
+        ):
+            if name.endswith(".tar.bz2"):
                 name = name[:-8]
-            self.path = os.path.join(pkg, channel, arch, name + '.json')
+            self.path = os.path.join(pkg, channel, arch, name + ".json")
         else:
-            msg = 'Artifact path or pkg, channel, arch and name must be given. '
-            msg += f'Got path={path!r}, pkg={pkg!r}, channel={channel!r}, '
-            msg += f'arch={arch!r}, name={name!r}.'
+            msg = "Artifact path or pkg, channel, arch and name must be given. "
+            msg += f"Got path={path!r}, pkg={pkg!r}, channel={channel!r}, "
+            msg += f"arch={arch!r}, name={name!r}."
             raise ValueError(msg)
         super().__init__()
 
@@ -75,7 +79,7 @@ class Artifact(MutableMapping):
     def _load(self):
         if not self.loaded:
             env = builtins.__xonsh_env__
-            filename = os.path.join(env.get('LIBCFGRAPH_DIR'), self.path)
-            with open(filename, 'r') as f:
+            filename = os.path.join(env.get("LIBCFGRAPH_DIR"), self.path)
+            with open(filename, "r") as f:
                 self.loaded = True
                 self.update(json.load(f))
