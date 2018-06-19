@@ -14,6 +14,7 @@ class Package(MutableMapping):
         self.name = name
         self._path = channel + ".json"
         self._load()
+        self._d = {}
         self.artifacts = defaultdict(lambda: defaultdict(set))
         for a in artifact_ids:
             _, channel, arch, artifact_name = a.split("/", 3)
