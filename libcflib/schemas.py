@@ -196,10 +196,6 @@ SCHEMAS = {
                 "type": "list",
                 "schema": {"type": "string"},
             },
-            "harvest_time": {
-                "_description": "UTC time when the artifacts were harvested",
-                "type": "float",
-            },
             "req": {
                 "_description": "The requirements. Note that this"
                 "is a superset of all the latest"
@@ -208,7 +204,7 @@ SCHEMAS = {
                 "schema": {"type": "string"},
             },
             "versions": {
-                "_description": "The versions for this " "package",
+                "_description": "The versions for this package",
                 "type": "list",
                 "schema": {"type": "string"},
             },

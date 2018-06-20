@@ -139,7 +139,6 @@ class Package(Model):
 
 
 class Feedstock(Model):
-
     def __init__(self, *, name=None):
         self._name = name
         super().__init__()
