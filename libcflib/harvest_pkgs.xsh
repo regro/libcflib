@@ -37,8 +37,11 @@ def create_graphs():
 
             for dep in channel_graphs[channel].nodes[pkg]['req']:
                 if (dep, pkg) not in channel_graphs[channel].edges:
-                    channel_graphs[channel].add_edge(dep, pkg, arch=set())
+                    channel_graphs[channel].add_edge(dep, pkg,
+                                                     arch=set(),
+                                                     version=set())
                 channel_graphs[channel].edges[(dep, pkg)]['arch'].add(arch)
+                channel_graphs[channel].edges[(dep, pkg)]['version'].add(art['version'])
     return channel_graphs
 
 

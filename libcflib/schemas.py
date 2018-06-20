@@ -13,8 +13,7 @@ SCHEMAS = {
                 "type": "bool",
             },
             "PRed": {
-                "_description": "For each migrator which"
-                "track which PRs have"
+                "_description": "For each migrator which track which PRs have "
                 "been issued",
                 "type": "list",
                 "schema": {"type": "string"},
@@ -26,10 +25,9 @@ SCHEMAS = {
             },
             "commit": {"type": "string", "_description": "The latest commit"},
             "new_version": {
-                "anyof_type": ["string", "bool"],
+                "anyof_type": ["string"],
                 "_description": "The new version",
             },
-            "meta_yaml": {"type": "dict", "_description": "The meta_yaml"},
         },
     },
     "artifact": {

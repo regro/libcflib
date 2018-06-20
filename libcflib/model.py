@@ -154,15 +154,13 @@ class Feedstock(Model):
 
 
 class Graph(Model):
-    def __init__(self, *, channel='conda-forge'):
+    def __init__(self, *, channel="conda-forge"):
         self._channel = channel
         super().__init__()
 
     def _load(self):
         env = builtins.__xonsh_env__
-        filename = os.path.join(
-            env.get("LIBCFGRAPH_DIR"), "conda-forge.json"
-        )
+        filename = os.path.join(env.get("LIBCFGRAPH_DIR"), "conda-forge.json")
         with open(filename, "r") as f:
-            self._d['graph'] = nx.node_link_graph(json.load(f))
+            self._d["graph"] = nx.node_link_graph(json.load(f))
         super()._load()
