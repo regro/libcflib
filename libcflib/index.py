@@ -3,7 +3,8 @@ from whoosh.index import FileIndex
 
 
 class NestedIndex(FileIndex):
-    """A whoosh index that uses a NestedWriter to add documents with a nested structure."""
+    """An Index that contains documents with nested structure. When a nested
+       dictionary is added to this index, the correct keys are extracted."""
 
     def writer(self, procs=1, **kwargs):
         from libcflib.writing import NestedWriter
