@@ -174,7 +174,10 @@ SCHEMAS = {
                 "type": "list",
                 "schema": {"type": "string"},
             },
-            "bad": {"_description": "Reason why the packages is bad", "type": "string"},
+            "bad": {
+                "_description": "Reason why the packages is bad",
+                "anyof_type": ["string", "list"],
+            },
             "harvest_time": {
                 "_description": "UTC time when the " "artifacts were " "harvested",
                 "type": "float",

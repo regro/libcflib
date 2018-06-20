@@ -6,3 +6,4 @@ zict
 tqdm
 toolz
 jinja2
+networkx

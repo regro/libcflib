@@ -6,14 +6,20 @@ from contextlib import contextmanager
 from collections.abc import MutableMapping
 
 from xonsh.environ import Ensurer, VarDocs
-from xonsh.tools import always_false, ensure_string, is_string, is_int
+from xonsh.tools import (
+    always_false,
+    ensure_string,
+    is_string,
+    is_int,
+    is_nonstring_seq_of_strings,
+)
 
 from libcflib.tools import expand_file_and_mkdirs
 
 
-def csv_to_list(x):
+def csv_to_set(x):
     """Converts a comma separated string to a list of strings."""
-    return x.split(",")
+    return set(x.split(","))
 
 
 def list_to_csv(x):
@@ -123,6 +129,26 @@ ENVVARS = OrderedDict(
         (
             "LIBCFLIB_DB_CACHE_SIZE",
             (1000000, is_int, int, str, "Size of the database LRU cache"),
+        ),
+        (
+            "LIBCFGRAPH_CHANNELS",
+            (
+                {"conda-forge"},
+                is_nonstring_seq_of_strings,
+                csv_to_set,
+                list_to_csv,
+                "The channels tracked by the database",
+            ),
+        ),
+        (
+            "LIBCFGRAPH_ARCH",
+            (
+                {"linux-64", "ox-64", "win-64", "noarch"},
+                is_nonstring_seq_of_strings,
+                csv_to_set,
+                list_to_csv,
+                "The arch tracked by the database",
+            ),
         ),
     ]
 )
