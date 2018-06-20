@@ -42,4 +42,4 @@ class Package(RequestHandler):
 
     def get(self, *args, **kwargs):
         """GETs the packages dict"""
-        self.write(self.db.packages[self.get_argument('pkg')])
+        self.write(self.db.packages[self.get_argument("pkg")])

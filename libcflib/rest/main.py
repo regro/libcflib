@@ -27,7 +27,7 @@ def make_parser():
         "--no-init-db",
         default=True,
         dest="init_db",
-        action='store_false',
+        action="store_false",
         help="turns off database initialization",
     )
     return p

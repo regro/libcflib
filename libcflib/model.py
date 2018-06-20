@@ -145,8 +145,9 @@ class Feedstock(Model):
 
     def _load(self):
         env = builtins.__xonsh_env__
-        filename = os.path.join(env.get("LIBCFGRAPH_DIR"),
-                                "conda-forge-feedstocks.json")
+        filename = os.path.join(
+            env.get("LIBCFGRAPH_DIR"), "conda-forge-feedstocks.json"
+        )
         with open(filename, "r") as f:
             self._d.update(json.load(f).get(self._name, {}))
         super()._load()
