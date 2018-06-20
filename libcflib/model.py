@@ -16,7 +16,7 @@ class Package(object):
             self.artifacts[channel][arch].add(artifact_name)
 
     def __repr__(self):
-        return f"Package({self.name}"
+        return f"Package({self.name})"
 
     def asdict(self):
         """Returns the package as a dictionary"""
