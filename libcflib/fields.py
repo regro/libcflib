@@ -25,9 +25,21 @@ TYPE_MAP = {
 
 
 class DICT(FieldType):
+    """
+    Special field type that lets you index dictionaries.
+    The field converts the dict to separate keys for each field before indexing.
+    """
+
     type_map = TYPE_MAP
 
     def __init__(self, schema, stored=False):
+        """Initialize a DICT.
+
+        Parameters
+        ----------
+        schema : dict
+            The schema for this object.
+        """
         self.schema = schema
         self.type_map["dict"] = DICT
 
