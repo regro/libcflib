@@ -6,6 +6,7 @@ import toolz
 import zict
 
 from libcflib.tools import indir
+from libcflib.logger import LOGGER
 from libcflib.model import Artifact, Package
 
 
@@ -37,9 +38,11 @@ class DB:
         if self._initialized:
             return
         if os.path.exists($LIBCFGRAPH_DIR):
+            LOGGER.log('pulling latest graph', category="db")
             with indir($LIBCFGRAPH_DIR):
                 git pull $LIBCFGRAPH_URL master
         else:
+            LOGGER.log('grabbing initial graph', category="db")
             git clone $LIBCFGRAPH_URL $LIBCFGRAPH_DIR
         self.cache = {}
         cache_size = $LIBCFLIB_DB_CACHE_SIZE if cache_size is None else cache_size

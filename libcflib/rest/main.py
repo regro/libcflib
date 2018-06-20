@@ -5,6 +5,7 @@ import tornado.web
 import tornado.ioloop
 
 import libcflib.rest.handlers
+from libcflib.db import DB
 from libcflib.logger import LOGGER
 from libcflib.rest.request_handler import RequestHandler
 
@@ -22,6 +23,13 @@ def make_parser():
         type=int,
         help="port to serve the fixie services on.",
     )
+    p.add_argument(
+        "--no-init-db",
+        default=True,
+        dest="init_db",
+        action='store_false',
+        help="turns off database initialization",
+    )
     return p
 
 
@@ -36,6 +44,9 @@ def run_application(ns):
             and issubclass(var, RequestHandler)
         ):
             handlers.append((var.route, var))
+    # init th database
+    if ns.init_db:
+        DB()
     # construct the app
     app = tornado.web.Application(handlers)
     app.listen(ns.port)
