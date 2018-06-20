@@ -2,6 +2,7 @@
 import os.path
 
 from whoosh.index import exists_in
+from whoosh.filedb.filestore import FileStorage
 from whoosh.fields import TEXT, KEYWORD, BOOLEAN, NUMERIC
 from libcflib.fields import DICT, NestedSchema
 from libcflib.index import NestedIndex
@@ -59,8 +60,6 @@ def get_index(index, schema=None):
     libcflib.index.NestedIndex
         A whoosh index with the specified name and schema.
     """
-    from whoosh.filedb.filestore import FileStorage
-
     indexname = "MAIN"
     storage = FileStorage(index)
     if not os.path.exists(index):
