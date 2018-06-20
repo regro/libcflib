@@ -1,4 +1,37 @@
 SCHEMAS = {
+    "feedstock": {
+        "_description": "Schema for the conda-forge feedstock",
+        "type": "dict",
+        "schema": {
+            "name": {"type": "string", "_description": "name of feedstock"},
+            "bad": {
+                "_description": "Reason why the packages are bad",
+                "type": "string",
+            },
+            "archived": {
+                "_description": "If the package is " "archived",
+                "type": "bool",
+            },
+            "PRed": {
+                "_description": "For each migrator which"
+                "track which PRs have"
+                "been issued",
+                "type": "list",
+                "schema": {"type": "string"},
+            },
+            "packages": {
+                "_description": "Links to the packages",
+                "type": "list",
+                "schema": {"type": "string"},
+            },
+            "commit": {"type": "string", "_description": "The latest commit"},
+            "new_version": {
+                "anyof_type": ["string", "bool"],
+                "_description": "The new version",
+            },
+            "meta_yaml": {"type": "dict", "_description": "The meta_yaml"},
+        },
+    },
     "artifact": {
         "_description": "Schema for the package artifact",
         "type": "dict",
@@ -157,27 +190,11 @@ SCHEMAS = {
         "_description": "Schema for the package",
         "type": "dict",
         "schema": {
-            "PRed": {
-                "_description": "For each migrator which"
-                "track which PRs have"
-                "been issued",
-                "type": "list",
-                "schema": {"type": "string"},
-            },
             "name": {"_description": "Package name", "type": "string"},
-            "archived": {
-                "_description": "If the package is " "archived",
-                "type": "bool",
-            },
             "artifacts": {
                 "_description": "Links to the artifacts",
                 "type": "list",
                 "schema": {"type": "string"},
-            },
-            "bad": {"_description": "Reason why the packages is bad", "type": "string"},
-            "harvest_time": {
-                "_description": "UTC time when the " "artifacts were " "harvested",
-                "type": "float",
             },
             "req": {
                 "_description": "The requirements. Note that this"
@@ -187,7 +204,7 @@ SCHEMAS = {
                 "schema": {"type": "string"},
             },
             "versions": {
-                "_description": "The versions for this " "package",
+                "_description": "The versions for this package",
                 "type": "list",
                 "schema": {"type": "string"},
             },

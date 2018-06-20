@@ -26,7 +26,7 @@ class Artifact(RequestHandler):
 class Packages(RequestHandler):
     """Gets the packages dictionary"""
 
-    route = '/packages'
+    route = "/packages"
     schema = {}
 
     def get(self, *args, **kwargs):
@@ -37,9 +37,9 @@ class Packages(RequestHandler):
 class Package(RequestHandler):
     """Gets the packages dictionary"""
 
-    route = '/package'
+    route = "/package"
     schema = {"pkg": NON_EMPTY_STR.copy()}
 
     def get(self, *args, **kwargs):
         """GETs the packages dict"""
-        self.write(self.db.packages[self.get_argument('pkg')])
+        self.write(self.db.packages[self.get_argument("pkg")])
