@@ -111,29 +111,24 @@ class Artifact(Model):
 
 
 class Package(Model):
-    def __init__(self, *, name=None, artifact_ids=None, channel="conda-forge"):
+    def __init__(self, *, name=None):
         self._name = name
-        self._channel = "conda-forge"
         super().__init__()
         self.name = name
-        self.channel = channel
         # eager load
         self._load()
 
+    def __repr__(self):
+        return f"Package({self.name})"
+
+    def _load(self):
+        with indir($LIBCFGRAPH_DIR + '/artifacts/' + self._name):
+            artifact_ids = g`**/*.json`
+            artifact_ids = sorted(artifact_ids)
         self.artifacts = defaultdict(lambda: defaultdict(set))
         for a in artifact_ids:
             _, channel, arch, artifact_name = a.split("/", 3)
             self.artifacts[channel][arch].add(artifact_name)
-
-    def __repr__(self):
-        return f"Package({self.name}"
-
-    def _load(self):
-        env = builtins.__xonsh_env__
-        filename = os.path.join(env.get("LIBCFGRAPH_DIR"), self._channel + ".json")
-        # TODO: use networkx to get the data so we have edges
-        with open(filename, "r") as f:
-            self._d.update(json.load(f).get(self._name, {}))
         super()._load()
 
 
