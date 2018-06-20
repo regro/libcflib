@@ -44,7 +44,7 @@ def run_application(ns):
             and issubclass(var, RequestHandler)
         ):
             handlers.append((var.route, var))
-    # init th database
+    # init the database
     if ns.init_db:
         DB()
     # construct the app
