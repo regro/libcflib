@@ -36,23 +36,28 @@ class RequestHandler(tornado.web.RequestHandler):
     def prepare(self):
         self.response = {}
         body = self.request.body
-        if not body:
-            return
-        try:
-            data = json.decode(body)
-        except ValueError:
-            self.send_error(400, message="Unable to parse JSON.")
-            return
+        if body:
+            try:
+                data = json.decode(body)
+            except ValueError:
+                self.send_error(400, message="Unable to parse JSON.")
+                return
+        else:
+            # tornado returns values as list. Take the last entry
+            # to conform to the JSON schema. Also, need to decode the values
+            data = {k: v[-1].decode() for k, v in self.request.arguments.items()}
         if not self.validator.validate(data):
             msg = "Input to " + self.__class__.__name__ + " is not valid: "
             msg += str(self.validator.errors)
             self.send_error(400, message=msg)
             return
-        self.request.arguments.clear()
-        self.request.arguments.update(data)
+        self.data = data
 
     def set_default_headers(self):
         self.set_header("Content-Type", "application/json")
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "x-requested-with")
+        self.set_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
 
     def write(self, chunk):
         """Writes the given chunk to the output buffer. This overrides (and almost

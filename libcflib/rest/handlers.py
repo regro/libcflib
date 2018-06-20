@@ -18,8 +18,7 @@ class Artifact(RequestHandler):
 
     def get(self, *args, **kwargs):
         """GETs an artifact."""
-        args = {k: self.get_argument(k) for k in self.schema}
-        a = self.db.get_artifact(**args)
+        a = self.db.get_artifact(**self.data)
         self.write(a)
 
 
@@ -42,4 +41,4 @@ class Package(RequestHandler):
 
     def get(self, *args, **kwargs):
         """GETs the packages dict"""
-        self.write(self.db.packages[self.get_argument("pkg")])
+        self.write(self.db.packages[self.data("pkg")])
