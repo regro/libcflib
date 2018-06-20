@@ -7,7 +7,7 @@ from collections.abc import Set
 
 def default(obj):
     """For custom object serialization."""
-    if hasattr(obj, 'asdict'):
+    if hasattr(obj, "asdict"):
         return obj.asdict()
     elif isinstance(obj, Set):
         return {"__set__": True, "elements": sorted(obj)}
