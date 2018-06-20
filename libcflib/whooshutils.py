@@ -2,8 +2,20 @@
 import os.path
 
 from whoosh.index import exists_in
-from libcflib.fields import TYPE_MAP, NestedSchema
+from whoosh.fields import TEXT, KEYWORD, BOOLEAN, NUMERIC
+from libcflib.fields import DICT, NestedSchema
 from libcflib.index import NestedIndex
+
+
+TYPE_MAP = {
+    "string": TEXT,
+    "list": KEYWORD,
+    "set": KEYWORD,
+    "bool": BOOLEAN,
+    "float": NUMERIC(numtype=float),
+    "integer": NUMERIC,
+    "dict": DICT,
+}
 
 
 def create_whoosh_schema(schema):
@@ -22,9 +34,9 @@ def create_whoosh_schema(schema):
     fields = {k: TYPE_MAP[v["type"]] for k, v in schema.items()}
     for f, t in fields.items():
         try:
-            fields[f] = t(schema=schema[f]["schema"], stored=True)
+            fields[f] = t(schema=schema[f]["schema"], type_map=TYPE_MAP)
         except (TypeError, KeyError):
-            fields[f] = t(stored=True)
+            fields[f] = t()
         fields[f].stored = True
     return NestedSchema(**fields)
 

@@ -3,25 +3,7 @@ import sys
 import re
 import fnmatch
 
-from whoosh.fields import (
-    FieldType,
-    Schema,
-    FieldConfigurationError,
-    TEXT,
-    KEYWORD,
-    BOOLEAN,
-    NUMERIC,
-)
-
-
-TYPE_MAP = {
-    "string": TEXT,
-    "list": KEYWORD,
-    "set": KEYWORD,
-    "bool": BOOLEAN,
-    "float": NUMERIC(numtype=float),
-    "integer": NUMERIC,
-}
+from whoosh.fields import FieldType, Schema, FieldConfigurationError
 
 
 class DICT(FieldType):
@@ -30,32 +12,32 @@ class DICT(FieldType):
     The field converts the dict to separate keys for each field before indexing.
     """
 
-    type_map = TYPE_MAP
-
-    def __init__(self, schema, stored=False):
+    def __init__(self, schema, type_map, stored=False):
         """Initialize a DICT.
 
         Parameters
         ----------
         schema : dict
             The schema for this object.
+        type_map : dict
+            A mapping from python types to whoosh FieldTypes.
         """
         self.schema = schema
-        self.type_map["dict"] = DICT
+        self.type_map = type_map
+        self.stored = stored
 
     def subfields(self):
         for k, v in self.schema.items():
             subfield = self.type_map[v["type"]]
             if type(subfield) is type:
                 try:
-                    subfield = self.type_map[v["type"]](schema=v["schema"])
+                    subfield = self.type_map[v["type"]](
+                        schema=v["schema"], type_map=self.type_map
+                    )
                 except (TypeError, KeyError):
                     subfield = self.type_map[v["type"]]()
             subfield.stored = self.stored
             yield k, subfield
-
-
-TYPE_MAP["dict"] = DICT
 
 
 class NestedSchema(Schema):
