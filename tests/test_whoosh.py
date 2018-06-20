@@ -31,11 +31,6 @@ def test_search(tmpdir):
 
     query = {"c.a": "world", "c.d.e": 5, "c.e": 3.5}
     results = search(index, query)
-    assert results == {
-        "a": "hello",
-        "b": 3,
-        "c.a": "world",
-        "c.d.e": 5,
-        "c.d.f": "hi",
-        "c.e": 3.5,
-    }
+    assert results == [
+        {"a": "hello", "b": 3, "c.a": "world", "c.d.e": 5, "c.d.f": "hi", "c.e": 3.5}
+    ]
