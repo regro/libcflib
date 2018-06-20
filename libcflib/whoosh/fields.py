@@ -53,7 +53,7 @@ class NestedSchema(Schema):
         if type(fieldtype) is type:
             try:
                 fieldtype = fieldtype()
-            except:
+            except Exception:
                 e = sys.exc_info()[1]
                 raise FieldConfigurationError(
                     "Error: %s instantiating field " "%r: %r" % (e, name, fieldtype)
