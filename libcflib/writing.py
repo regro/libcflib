@@ -4,7 +4,7 @@ from whoosh.writing import SegmentWriter
 
 
 def get_value(fields, fieldname):
-    keys = fieldname.split('.')
+    keys = fieldname.split(".")
     value = fields
     for k in keys:
         if value is None:
