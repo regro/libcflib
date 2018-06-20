@@ -1,6 +1,6 @@
 import os.path
 
-from libcflib.whooshutils import create_whoosh_schema, add, search
+from libcflib.whoosh.utils import create_whoosh_schema, add, search
 
 
 def test_search(tmpdir):

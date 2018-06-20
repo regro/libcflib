@@ -9,6 +9,6 @@ class NestedIndex(FileIndex):
     """
 
     def writer(self, procs=1, **kwargs):
-        from libcflib.writing import NestedWriter
+        from libcflib.whoosh.writing import NestedWriter
 
         return NestedWriter(self, **kwargs)

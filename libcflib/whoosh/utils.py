@@ -4,8 +4,8 @@ import os.path
 from whoosh.index import exists_in
 from whoosh.filedb.filestore import FileStorage
 from whoosh.fields import TEXT, KEYWORD, BOOLEAN, NUMERIC
-from libcflib.fields import DICT, NestedSchema
-from libcflib.index import NestedIndex
+from libcflib.whoosh.fields import DICT, NestedSchema
+from libcflib.whoosh.index import NestedIndex
 
 
 TYPE_MAP = {
