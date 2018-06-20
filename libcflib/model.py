@@ -64,30 +64,6 @@ class Model(object):
         return self._d
 
 
-class Package(Model):
-    def __init__(self, *, name=None, artifact_ids=None, channel="conda-forge"):
-        self._name = name
-        self._channel = "conda-forge"
-        super().__init__()
-        self.name = name
-        self.channel = channel
-        self.artifacts = defaultdict(lambda: defaultdict(set))
-        for a in artifact_ids:
-            _, channel, arch, artifact_name = a.split("/", 3)
-            self.artifacts[channel][arch].add(artifact_name)
-
-    def __repr__(self):
-        return f"Package({self.name})"
-
-    def _load(self):
-        env = builtins.__xonsh_env__
-        filename = os.path.join(env.get("LIBCFGRAPH_DIR"), self._channel + ".json")
-        # TODO: use networkx to get the data so we have edges
-        with open(filename, "r") as f:
-            self._d.update(json.load(f).get(self._name, {}))
-        super()._load()
-
-
 class Artifact(Model):
     """Representation of an artifact via a lazy json load.
     Either the filename path or the pkg, channel, arch, and name
@@ -132,4 +108,46 @@ class Artifact(Model):
         filename = os.path.join(env.get("LIBCFGRAPH_DIR"), "artifacts", self._path)
         with open(filename, "r") as f:
             self._d.update(json.load(f))
+        super()._load()
+
+
+class Package(Model):
+    def __init__(self, *, name=None, artifact_ids=None, channel="conda-forge"):
+        self._name = name
+        self._channel = "conda-forge"
+        super().__init__()
+        self.name = name
+        self.channel = channel
+        # eager load
+        self._load()
+
+        self.artifacts = defaultdict(lambda: defaultdict(set))
+        for a in artifact_ids:
+            _, channel, arch, artifact_name = a.split("/", 3)
+            self.artifacts[channel][arch].add(artifact_name)
+
+    def __repr__(self):
+        return f"Package({self.name}"
+
+    def _load(self):
+        env = builtins.__xonsh_env__
+        filename = os.path.join(env.get("LIBCFGRAPH_DIR"), self._channel + ".json")
+        # TODO: use networkx to get the data so we have edges
+        with open(filename, "r") as f:
+            self._d.update(json.load(f).get(self._name, {}))
+        super()._load()
+
+
+class Feedstock(Model):
+
+    def __init__(self, *, name=None):
+        self._name = name
+        super().__init__()
+
+    def _load(self):
+        env = builtins.__xonsh_env__
+        filename = os.path.join(env.get("LIBCFGRAPH_DIR"),
+                                "conda-forge-feedstocks.json")
+        with open(filename, "r") as f:
+            self._d.update(json.load(f).get(self._name, {}))
         super()._load()
