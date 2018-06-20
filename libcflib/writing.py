@@ -1,4 +1,5 @@
 # Copyright 2007 Matt Chaput. All rights reserved.
+"""Custom whoosh writers."""
 from whoosh.util.text import utf8encode
 from whoosh.writing import SegmentWriter
 
@@ -29,6 +30,8 @@ def get_fieldnames(fields, base=""):
 
 
 class NestedWriter(SegmentWriter):
+    """An IndexWriter that writes to a NestedIndex."""
+
     def add_document(self, **fields):
         self._check_state()
         perdocwriter = self.perdocwriter
