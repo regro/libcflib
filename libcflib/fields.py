@@ -42,6 +42,8 @@ class DICT(FieldType):
 
 
 class NestedSchema(Schema):
+    """A schema for nested documents."""
+
     def __init__(self, **fields):
         super().__init__(**fields)
 
