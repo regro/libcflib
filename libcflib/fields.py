@@ -1,4 +1,5 @@
 # Copyright 2007 Matt Chaput. All rights reserved.
+"""Custom whoosh field types and schemas."""
 import sys
 import re
 import fnmatch
