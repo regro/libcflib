@@ -18,6 +18,7 @@ import tqdm
 
 from .harvester import harvest
 from .tools import expand_file_and_mkdirs
+from .update_graph import update_graphs
 
 channel_list = ("https://conda.anaconda.org/{}/{}".format(c, a) for c, a in
                 product($LIBCFGRAPH_CHANNELS, $LIBCFGRAPH_ARCH))
@@ -149,3 +150,4 @@ if __name__ == "__main__":
         known_bad_packages = set()
 
     reap(args.root_path, known_bad_packages)
+    update_graphs()
