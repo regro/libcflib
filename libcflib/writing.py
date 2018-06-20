@@ -5,6 +5,21 @@ from whoosh.writing import SegmentWriter
 
 
 def get_value(fields, fieldname):
+    """Get the value of a field from a nested dict.
+
+    Parameters
+    ----------
+    fields : dict
+        The nested dict.
+    fieldname : str
+        The name of the field. For nested fields, the name is of the form
+        `a.b.c`, which corresponds to `fields['a']['b']['c']`.
+
+    Returns
+    -------
+    The value.
+    """
+
     keys = fieldname.split(".")
     value = fields
     for k in keys:
@@ -15,6 +30,22 @@ def get_value(fields, fieldname):
 
 
 def get_fieldnames(fields, base=""):
+    """Get the names of the fields in a nested dict.
+
+    Parameters
+    ----------
+    fields : dict
+        The nested dict.
+    base : str
+        A string that is added to the beginning of the returned field names.
+
+    Yields
+    ------
+    str
+        The name of a field in `fields`. For the nested field
+        `fields['a']['b']['c']` the name is `a.b.c`.
+    """
+
     try:
         for name, value in fields.items():
             if name.startswith("_"):
