@@ -61,7 +61,7 @@ class RequestHandler(tornado.web.RequestHandler):
         """
         if self._finished:
             raise RuntimeError("Cannot write() after finish()")
-        if not isinstance(chunk, (bytes, str, dict)) and not hasattr(chunk, 'asdict'):
+        if not isinstance(chunk, (bytes, str, dict)) and not hasattr(chunk, "asdict"):
             message = "write() only accepts bytes, unicode, and dict objects"
             if isinstance(chunk, list):
                 message += (
@@ -70,7 +70,7 @@ class RequestHandler(tornado.web.RequestHandler):
                     "#tornado.web.RequestHandler.write"
                 )
             raise TypeError(message)
-        if isinstance(chunk, dict) or hasattr(chunk, 'asdict'):
+        if isinstance(chunk, dict) or hasattr(chunk, "asdict"):
             chunk = json.encode(chunk) + "\n"
             self.set_header("Content-Type", "application/json; charset=UTF-8")
         chunk = utf8(chunk)
