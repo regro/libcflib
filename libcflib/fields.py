@@ -15,12 +15,12 @@ from whoosh.fields import (
 
 
 TYPE_MAP = {
-    'string': TEXT,
-    'list': KEYWORD,
-    'set': KEYWORD,
-    'bool': BOOLEAN,
-    'float': NUMERIC(numtype=float),
-    'integer': NUMERIC,
+    "string": TEXT,
+    "list": KEYWORD,
+    "set": KEYWORD,
+    "bool": BOOLEAN,
+    "float": NUMERIC(numtype=float),
+    "integer": NUMERIC,
 }
 
 
@@ -29,20 +29,21 @@ class DICT(FieldType):
 
     def __init__(self, schema, stored=False):
         self.schema = schema
-        self.type_map['dict'] = DICT
+        self.type_map["dict"] = DICT
 
     def subfields(self):
         for k, v in self.schema.items():
-            try:
-                subfield = self.type_map[v['type']](
-                    schema=v['schema'], stored=self.stored
-                )
-            except (TypeError, KeyError):
-                subfield = self.type_map[v['type']](stored=self.stored)
+            subfield = self.type_map[v["type"]]
+            if type(subfield) is type:
+                try:
+                    subfield = self.type_map[v["type"]](schema=v["schema"])
+                except (TypeError, KeyError):
+                    subfield = self.type_map[v["type"]]()
+            subfield.stored = self.stored
             yield k, subfield
 
 
-TYPE_MAP['dict'] = DICT
+TYPE_MAP["dict"] = DICT
 
 
 class NestedSchema(Schema):
@@ -66,7 +67,7 @@ class NestedSchema(Schema):
 
         self._subfields[name] = sublist = []
         for suffix, subfield in fieldtype.subfields():
-            fname = name + '.' + suffix if suffix else name
+            fname = name + "." + suffix if suffix else name
             sublist.append(fname)
 
             # Check field name
