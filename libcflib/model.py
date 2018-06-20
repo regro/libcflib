@@ -5,6 +5,8 @@ import json
 import os
 from typing import Iterator
 
+import networkx as nx
+
 
 class Model(object):
     def __init__(self):
@@ -131,7 +133,6 @@ class Package(Model):
     def _load(self):
         env = builtins.__xonsh_env__
         filename = os.path.join(env.get("LIBCFGRAPH_DIR"), self._channel + ".json")
-        # TODO: use networkx to get the data so we have edges
         with open(filename, "r") as f:
             self._d.update(json.load(f).get(self._name, {}))
         super()._load()
@@ -149,4 +150,17 @@ class Feedstock(Model):
         )
         with open(filename, "r") as f:
             self._d.update(json.load(f).get(self._name, {}))
+        super()._load()
+
+
+class Graph(Model):
+    def __init__(self, *, channel="conda-forge"):
+        self._channel = channel
+        super().__init__()
+
+    def _load(self):
+        env = builtins.__xonsh_env__
+        filename = os.path.join(env.get("LIBCFGRAPH_DIR"), "conda-forge.json")
+        with open(filename, "r") as f:
+            self._d["graph"] = nx.node_link_graph(json.load(f))
         super()._load()
