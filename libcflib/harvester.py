@@ -38,6 +38,13 @@ def harvest(io_like):
     except ScannerError:
         # Non parseable
         rendered_recipe = {}
+    except KeyError:
+        # older artifacts have a meta.yaml in another location
+        try:
+            rendered_recipe = ruamel_yaml.safe_load(tf.extractfile("info/meta.yaml"))
+        except ScannerError:
+            # Non parseable
+            rendered_recipe = {}
 
     try:
         raw_recipe = (
