@@ -23,7 +23,18 @@ def filter_file(filename):
     else:
         return True
 
+# There are some meta.yaml files that were written weirdly and have some strange tag
+# information in them.  This is not parsable by safe loader, so we add some more 
+# fallback loading
+def yaml_construct_fallback(loader, node):
+    return None
 
+ruamel_yaml.add_constructor(
+    'tag:yaml.org,2002:python/object/apply:builtins.getattr', 
+    yaml_construct_fallback,
+    constructor=ruamel_yaml.SafeConstructor,
+)
+    
 def harvest(io_like):
     tf = tarfile.open(fileobj=io_like, mode="r:bz2")
 
