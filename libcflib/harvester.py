@@ -34,7 +34,12 @@ ruamel_yaml.add_constructor(
     yaml_construct_fallback,
     constructor=ruamel_yaml.SafeConstructor,
 )
-    
+ruamel_yaml.add_constructor(
+    'tag:yaml.org,2002:python/object:__builtin__.instancemethod',
+    yaml_construct_fallback,
+    constructor=ruamel_yaml.SafeConstructor,
+)
+
 def harvest(io_like):
     tf = tarfile.open(fileobj=io_like, mode="r:bz2")
 
