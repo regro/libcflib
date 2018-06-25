@@ -27,13 +27,14 @@ def create_graphs():
                         req.add(dep.split(' ')[0])
             if pkg not in channel_graphs[channel]:
                 channel_graphs[channel].add_node(pkg)
-            for k in ['versions', 'archs', 'req']:
+            for k in ['versions', 'archs', 'req', 'artifact_id']:
                 if k not in channel_graphs[channel].nodes[pkg]:
                     channel_graphs[channel].nodes[pkg][k] = set()
 
             channel_graphs[channel].nodes[pkg]['archs'].add(arch)
             channel_graphs[channel].nodes[pkg]['versions'].add(art['version'])
             channel_graphs[channel].nodes[pkg]['req'].update(req)
+            channel_graphs[channel].nodes[pkg]['artifact_id'].update(art_fp)
 
             for dep in channel_graphs[channel].nodes[pkg]['req']:
                 if (dep, pkg) not in channel_graphs[channel].edges:

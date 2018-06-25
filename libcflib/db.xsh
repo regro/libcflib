@@ -84,13 +84,9 @@ class DB:
                 yield data
 
     def load_packages(self):
-        with indir($LIBCFGRAPH_DIR + '/artifacts/'):
-            artifacts = g`**/*.json`
-            artifacts = sorted(artifacts)
-            groups = toolz.groupby(lambda a: a.split('/')[0], artifacts)
-            for package, artifact in groups.items():
-                p = Package(name=package, artifact_ids=artifact)
-                self._packages[p.name] = p
+        for package in os.listdir($LIBCFGRAPH_DIR + '/artifacts/'):
+            p = Package(name=package)
+            self._packages[p.name] = p
 
     @property
     def packages(self):
