@@ -126,7 +126,7 @@ class Package(Model):
             self.artifacts[channel][arch].add(artifact_name)
 
     def __repr__(self):
-        return f"Package({self.name}"
+        return f"Package({self.name})"
 
     def _load(self):
         env = builtins.__xonsh_env__
