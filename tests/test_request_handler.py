@@ -11,8 +11,8 @@ class ValidationRequest(RequestHandler):
 
     schema = {"name": {"type": "string"}}
 
-    def post(self):
-        name = self.request.arguments["name"]
+    def get(self):
+        name = self.data["name"]
         self.write("My name is " + name)
 
 
@@ -27,7 +27,8 @@ def app():
 @pytest.mark.gen_test
 def test_valid(http_client, base_url):
     body = '{"name": "Inigo Montoya"}'
-    response = yield http_client.fetch(base_url, method="POST", body=body)
+    response = yield http_client.fetch(base_url, body=body, method="GET",
+                                       allow_nonstandard_methods=True)
     assert response.code == 200
     assert response.body == b"My name is Inigo Montoya"
 
@@ -36,7 +37,8 @@ def test_valid(http_client, base_url):
 def test_invalid(http_client, base_url):
     body = '{"name": 42}'
     try:
-        response = yield http_client.fetch(base_url, method="POST", body=body)
+        response = yield http_client.fetch(base_url, method="GET", body=body,
+                                           allow_nonstandard_methods=True)
     except HTTPError as e:
         response = e.response
     assert response.code == 400
@@ -47,7 +49,8 @@ def test_invalid(http_client, base_url):
 def test_not_json(http_client, base_url):
     body = '"name": 42'
     try:
-        response = yield http_client.fetch(base_url, method="POST", body=body)
+        response = yield http_client.fetch(base_url, method="GET", body=body,
+                                           allow_nonstandard_methods=True)
     except HTTPError as e:
         response = e.response
     assert response.code == 400
