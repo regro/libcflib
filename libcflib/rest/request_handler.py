@@ -57,7 +57,7 @@ class RequestHandler(tornado.web.RequestHandler):
         self.set_header("Content-Type", "application/json")
         self.set_header("Access-Control-Allow-Origin", "*")
         self.set_header("Access-Control-Allow-Headers", "x-requested-with")
-        self.set_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+        self.set_header("Access-Control-Allow-Methods", "GET, OPTIONS")
 
     def write(self, chunk):
         """Writes the given chunk to the output buffer. This overrides (and almost
