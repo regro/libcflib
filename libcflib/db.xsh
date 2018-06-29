@@ -7,7 +7,7 @@ import zict
 
 from libcflib.tools import indir
 from libcflib.logger import LOGGER
-from libcflib.model import Artifact, Package
+from libcflib.model import Artifact, Package, Channel
 
 
 class DB:
@@ -43,11 +43,12 @@ class DB:
                 git pull $LIBCFGRAPH_URL master
         else:
             LOGGER.log('grabbing initial graph', category="db")
-            git clone $LIBCFGRAPH_URL $LIBCFGRAPH_DIR
+            git clone --quiet $LIBCFGRAPH_URL $LIBCFGRAPH_DIR
         self.cache = {}
         cache_size = $LIBCFLIB_DB_CACHE_SIZE if cache_size is None else cache_size
         self.lru = zict.LRU(cache_size, self.cache)
         self.times = {}
+        self._channels = {}
         self._packages = {}
         self._initialized = True
 
@@ -66,11 +67,10 @@ class DB:
         -------
         res :
             The loaded artifact search results
-
-        Caching forked from Streamz
-        Copyright (c) 2017, Continuum Analytics, Inc. and contributors
-        All rights reserved.
         """
+        # Caching forked from Streamz
+        # Copyright (c) 2017, Continuum Analytics, Inc. and contributors
+        # All rights reserved.
         with self.idx.searcher() as searcher:
             results = searcher.search()
             for result in results:
@@ -83,7 +83,21 @@ class DB:
                     data = self.cache[results]
                 yield data
 
+    def load_channels(self):
+        """Loads channel data for known channels"""
+        with indir($LIBCFGRAPH_DIR):
+            for fname in g`*.json`:
+                name = fname[:-5]
+                self._channels[name] = Channel(name)
+
+    @property
+    def channels(self):
+        if not self._channels:
+            self.load_channels()
+        return self._channels
+
     def load_packages(self):
+        """Loads package data for known package"""
         with indir($LIBCFGRAPH_DIR + '/artifacts/'):
             artifacts = g`**/*.json`
             artifacts = sorted(artifacts)

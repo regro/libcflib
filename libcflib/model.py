@@ -5,6 +5,15 @@ import json
 import os
 from typing import Iterator
 
+from lazyasd import lazyobject
+
+
+@lazyobject
+def DB():
+    """Lazily loaded database object."""
+    from libcflib import db
+    return db.DB()
+
 
 class Model(object):
     def __init__(self):
@@ -110,13 +119,38 @@ class Artifact(Model):
         super()._load()
 
 
-class Package(Model):
-    def __init__(self, *, name=None, artifact_ids=None, channel="conda-forge"):
-        self._name = name
-        self._channel = "conda-forge"
+class Channel(Model):
+    """Lazily loaded channel model"""
+
+    def __init__(self, name):
+        """
+        Parameters
+        ----------
+        name : str
+            The name of the channel to load.
+        """
         super().__init__()
-        self.name = name
-        self.channel = channel
+        self.name = self._name = name
+
+    def __repr__(self):
+        return f"Channel({self.name!r})"
+
+    def _load(self):
+        env = builtins.__xonsh_env__
+        filename = os.path.join(env.get("LIBCFGRAPH_DIR"), self._name + ".json")
+        # TODO: use networkx to get the data so we have edges
+        with open(filename, "r") as f:
+            self._d.update(json.load(f))
+        super()._load()
+
+
+class Package(Model):
+    """Lazily loaded package model"""
+
+    def __init__(self, *, name=None, artifact_paths=None):
+        super().__init__()
+        self.name = self._name = name
+        self._artifact_paths = artifact_paths
         # eager load
         self._load()
 
@@ -126,7 +160,7 @@ class Package(Model):
             self.artifacts[channel][arch].add(artifact_name)
 
     def __repr__(self):
-        return f"Package({self.name})"
+        return f"Package({self.name!r}, artifact_paths={self._artifact_paths!r})"
 
     def _load(self):
         env = builtins.__xonsh_env__
