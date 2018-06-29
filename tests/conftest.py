@@ -20,8 +20,8 @@ def rmtree(dirname):
     try:
         shutil.rmtree(dirname)
     except PermissionError:
-        if sys.platform == 'win32':
-            subprocess.check_call(['del', '/F/S/Q', dirname], shell=True)
+        if sys.platform == "win32":
+            subprocess.check_call(["del", "/F/S/Q", dirname], shell=True)
         else:
             raise
 
@@ -29,13 +29,13 @@ def rmtree(dirname):
 @pytest.fixture
 def gitecho():
     aliases = builtins.aliases
-    orig_alias = aliases.get('git', None)
-    aliases['git'] = lambda args: 'Would have run: ' + ' '.join(args) + '\n'
+    orig_alias = aliases.get("git", None)
+    aliases["git"] = lambda args: "Would have run: " + " ".join(args) + "\n"
     yield None
     if orig_alias is None:
-        del aliases['git']
+        del aliases["git"]
     else:
-        aliases['git'] = orig_alias
+        aliases["git"] = orig_alias
 
 
 @pytest.fixture
