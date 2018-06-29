@@ -7,6 +7,8 @@ from typing import Iterator
 
 from lazyasd import lazyobject
 
+from libcflib.tools import indir
+
 
 @lazyobject
 def DB():
@@ -119,21 +121,21 @@ class Artifact(Model):
         super()._load()
 
 
-class Channel(Model):
-    """Lazily loaded channel model"""
+class ChannelGraph(Model):
+    """Lazily loaded channel graph model"""
 
     def __init__(self, name):
         """
         Parameters
         ----------
         name : str
-            The name of the channel to load.
+            The name of the channel graph to load.
         """
         super().__init__()
         self.name = self._name = name
 
     def __repr__(self):
-        return f"Channel({self.name!r})"
+        return f"ChannelGraph({self.name!r})"
 
     def _load(self):
         env = builtins.__xonsh_env__
@@ -147,27 +149,37 @@ class Channel(Model):
 class Package(Model):
     """Lazily loaded package model"""
 
-    def __init__(self, *, name=None, artifact_paths=None):
+    def __init__(self, *, name=None):
         super().__init__()
         self.name = self._name = name
-        self._artifact_paths = artifact_paths
-        # eager load
-        self._load()
-
-        self.artifacts = defaultdict(lambda: defaultdict(set))
-        for a in artifact_ids:
-            _, channel, arch, artifact_name = a.split("/", 3)
-            self.artifacts[channel][arch].add(artifact_name)
 
     def __repr__(self):
-        return f"Package({self.name!r}, artifact_paths={self._artifact_paths!r})"
+        return f"Package({self.name!r})"
 
     def _load(self):
         env = builtins.__xonsh_env__
-        filename = os.path.join(env.get("LIBCFGRAPH_DIR"), self._channel + ".json")
-        # TODO: use networkx to get the data so we have edges
-        with open(filename, "r") as f:
-            self._d.update(json.load(f).get(self._name, {}))
+        arches = set()
+        channels = set()
+        artifacts = defaultdict(lambda: defaultdict(set))
+        for channel, graph in DB.channel_graphs.items():
+            pkg = graph.get(self._name, None)
+            if pkg is None:
+                # package does not exist on this channel
+                continue
+            # FIXME: This probably needs to do a deep merge, rather than update
+            self._d.update(pkg)
+            channels.add(channel)
+            channel_dir = os.path.join($LIBCFGRAPH_DIR, 'artifacts', self._name, channel)
+            with indir(channel_dir):
+                arch_names = g`*`
+            arches.update(arch_names)
+            for arch in arch_names:
+                arch_dir = os.path.join(channel_dir, arch)
+                with indir(arch_dir):
+                    artifacts[channel][arch].update(g`*.json`)
+        self.arches = arches
+        self.channels = channels
+        self.artifacts = artifacts
         super()._load()
 
 
