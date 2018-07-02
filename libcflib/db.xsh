@@ -7,7 +7,7 @@ import zict
 
 from libcflib.tools import indir
 from libcflib.logger import LOGGER
-from libcflib.model import Artifact, Package
+from libcflib.models import Artifact, Package, ChannelGraph
 
 
 class DB:
@@ -29,12 +29,10 @@ class DB:
         ----------
         cache_size : int or None, optional
             Size of the cache, defaults to $LIBCFLIB_DB_CACHE_SIZE
-
-        Caching forked from Streamz
-        Copyright (c) 2017, Continuum Analytics, Inc. and contributors
-        All rights reserved.
-
         """
+        # Caching forked from Streamz
+        # Copyright (c) 2017, Continuum Analytics, Inc. and contributors
+        # All rights reserved.
         if self._initialized:
             return
         if os.path.exists($LIBCFGRAPH_DIR):
@@ -43,11 +41,12 @@ class DB:
                 git pull $LIBCFGRAPH_URL master
         else:
             LOGGER.log('grabbing initial graph', category="db")
-            git clone $LIBCFGRAPH_URL $LIBCFGRAPH_DIR
+            git clone --quiet $LIBCFGRAPH_URL $LIBCFGRAPH_DIR
         self.cache = {}
         cache_size = $LIBCFLIB_DB_CACHE_SIZE if cache_size is None else cache_size
         self.lru = zict.LRU(cache_size, self.cache)
         self.times = {}
+        self._channel_graphs = {}
         self._packages = {}
         self._initialized = True
 
@@ -66,11 +65,10 @@ class DB:
         -------
         res :
             The loaded artifact search results
-
-        Caching forked from Streamz
-        Copyright (c) 2017, Continuum Analytics, Inc. and contributors
-        All rights reserved.
         """
+        # Caching forked from Streamz
+        # Copyright (c) 2017, Continuum Analytics, Inc. and contributors
+        # All rights reserved.
         with self.idx.searcher() as searcher:
             results = searcher.search()
             for result in results:
@@ -83,14 +81,25 @@ class DB:
                     data = self.cache[results]
                 yield data
 
+    def load_channel_graphs(self):
+        """Loads channel data for known channels"""
+        with indir($LIBCFGRAPH_DIR):
+            for fname in g`*.json`:
+                name = fname[:-5]
+                self._channel_graphs[name] = ChannelGraph(name)
+
+    @property
+    def channel_graphs(self):
+        if not self._channel_graphs:
+            self.load_channel_graphs()
+        return self._channel_graphs
+
     def load_packages(self):
+        """Loads package data for known package"""
         with indir($LIBCFGRAPH_DIR + '/artifacts/'):
-            artifacts = g`**/*.json`
-            artifacts = sorted(artifacts)
-            groups = toolz.groupby(lambda a: a.split('/')[0], artifacts)
-            for package, artifact in groups.items():
-                p = Package(name=package, artifact_ids=artifact)
-                self._packages[p.name] = p
+            package_names = g`*`
+        for name in package_names:
+            self._packages[name] = Package(name=name)
 
     @property
     def packages(self):

@@ -2,7 +2,7 @@ import os
 import json
 import builtins
 
-from libcflib.model import Artifact
+from libcflib.models import Artifact, Package
 
 
 def test_artifact(tmpgraphdir):
@@ -23,5 +23,11 @@ def test_artifact(tmpgraphdir):
     hash(n)
 
 
-# TODO: test package
+def test_package(tmpgraphdir):
+    p = Package(name="mypkg")
+    exp = {"arches": set(), "artifacts": {}, "channels": set(), "name": "mypkg"}
+    obs = p.asdict()
+    assert exp == obs
+
+
 # TODO: test feedstock
