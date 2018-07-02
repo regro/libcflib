@@ -4,6 +4,16 @@ libcflib Change Log
 
 .. current developments
 
+v0.0.2
+====================
+
+**Fixed:**
+
+* Fixed version number bumping in setup.py.
+
+
+
+
 v0.0.1
 ====================
 
