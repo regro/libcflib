@@ -1,9 +1,14 @@
 $PROJECT = 'libcflib'
-$ACTIVITIES = ['version_bump', 'changelog',
-               'tag', 'push_tag', 
-               'ghrelease',
-               'pypi', 
-               'conda_forge',
+$ACTIVITIES = [
+    'version_bump',
+    'changelog',
+    'tag',
+    'push_tag',
+    'ghrelease',
+    'pypi',
+    #'conda_forge',
+    'docker_build',
+    'docker_push',
 ]
 
 $VERSION_BUMP_PATTERNS = [
@@ -16,3 +21,7 @@ $PUSH_TAG_REMOTE = 'git@github.com:regro/libcflib.git'
 
 $GITHUB_ORG = 'regro'
 
+# docker config
+$DOCKERFILE = 'docker/Dockerfile'
+$DOCKERFILE_TAGS = ('condaforge/libcflib:$VERSION',
+                    'condaforge/libcflib:latest')
