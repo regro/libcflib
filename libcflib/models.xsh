@@ -1,11 +1,16 @@
 """Module for representing entities of the graph"""
 import builtins
 from collections import defaultdict
-import json
 import os
 from typing import Iterator
 
 from lazyasd import lazyobject
+
+try:
+    from pandas._lib.json import load as load_json_file
+except ImportError:
+    import json
+    load_json_file = json.load
 
 from libcflib.tools import indir
 
@@ -117,7 +122,7 @@ class Artifact(Model):
         env = builtins.__xonsh_env__
         filename = os.path.join(env.get("LIBCFGRAPH_DIR"), "artifacts", self._path)
         with open(filename, "r") as f:
-            self._d.update(json.load(f))
+            self._d.update(load_json_file(f))
         super()._load()
 
 
@@ -142,7 +147,7 @@ class ChannelGraph(Model):
         filename = os.path.join(env.get("LIBCFGRAPH_DIR"), self._name + ".json")
         # TODO: use networkx to get the data so we have edges
         with open(filename, "r") as f:
-            self._d.update(json.load(f))
+            self._d.update(load_json_file(f))
         super()._load()
 
 
@@ -194,5 +199,5 @@ class Feedstock(Model):
             env.get("LIBCFGRAPH_DIR"), "conda-forge-feedstocks.json"
         )
         with open(filename, "r") as f:
-            self._d.update(json.load(f).get(self._name, {}))
+            self._d.update(load_json_file(f).get(self._name, {}))
         super()._load()

@@ -7,3 +7,4 @@ tqdm
 toolz
 jinja2
 lazyasd
+pandas
