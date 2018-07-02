@@ -1,4 +1,4 @@
-$PROJECT = 'libcflib'
+$PROJECT = $GITHUB_REPO = 'libcflib'
 $ACTIVITIES = [
     'version_bump',
     'changelog',
