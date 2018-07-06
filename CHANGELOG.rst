@@ -4,6 +4,16 @@ libcflib Change Log
 
 .. current developments
 
+v0.0.3
+====================
+
+**Added:**
+
+* Updating versions will now push up the new app to the servers
+
+
+
+
 v0.0.2
 ====================
 
