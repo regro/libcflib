@@ -70,7 +70,7 @@ def deploy_to_gcloud():
     _ensure_default_credentials()
     account = _ensure_account()
     # get cluster credentials
-    ![gcloud container clusters get-credentials --account @(account)
+    ![gcloud container clusters get-credentials --account @(account) \
       --zone=$GCLOUD_ZONE --project=$GCLOUD_PROJECT_ID $GCLOUD_CLUSTER]
     # set new image
     ![kubectl set image deployment/libcflib-app libcflib-app=condaforge/libcflib:$VERSION]
