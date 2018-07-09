@@ -65,6 +65,13 @@ def libcfgraph_dir():
     return s
 
 
+def libcfgraph_index():
+    """Ensures and returns the $LIBCFGRAPH_INDEX"""
+    env = builtins.__xonsh_env__
+    s = os.path.join(env.get("LIBCFGRAPH_DIR"), "whoosh")
+    return s
+
+
 # key = name
 # value = (default, validate, convert, detype, docstr)
 # this needs to be ordered so that the default are applied in the correct order
@@ -107,7 +114,17 @@ ENVVARS = OrderedDict(
                 is_string,
                 str,
                 ensure_string,
-                "Path to the libcfgrapgh repository directory.",
+                "Path to the libcfgraph repository directory.",
+            ),
+        ),
+        (
+            "LIBCFGRAPH_INDEX",
+            (
+                libcfgraph_index,
+                is_string,
+                str,
+                ensure_string,
+                "Path to the libcfgraph whoosh index.",
             ),
         ),
         (
