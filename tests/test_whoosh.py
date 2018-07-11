@@ -27,7 +27,7 @@ def test_search(tmpdir):
         "b": 3,
         "c": {"a": "world", "d": {"e": 5, "f": "hi"}, "e": 3.5},
     }
-    add(index, ws, **doc)
+    add(index, schema=ws, **doc)
 
     query = {"c.a": "world", "c.d.e": 5, "c.e": 3.5}
     results = search(index, query)
