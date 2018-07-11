@@ -37,7 +37,7 @@ class DICT(FieldType):
                     )
                 except (TypeError, KeyError):
                     subfield = self.type_map[v["type"]]()
-            subfield.stored = self.stored
+            subfield.stored = v.get("stored", self.stored) and self.stored
             yield k, subfield
 
 

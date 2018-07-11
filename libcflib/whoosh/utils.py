@@ -32,13 +32,12 @@ def create_whoosh_schema(schema):
     libcflib.fields.NestedSchema
         A whoosh schema with the same structure as the input.
     """
-    fields = {k: TYPE_MAP[v["type"]] for k, v in schema.items()}
-    for f, t in fields.items():
+    fields = {k: (TYPE_MAP[v["type"]], v["stored"]) for k, v in schema.items()}
+    for f, (t, s) in fields.items():
         try:
-            fields[f] = t(schema=schema[f]["schema"], type_map=TYPE_MAP)
+            fields[f] = t(schema=schema[f]["schema"], type_map=TYPE_MAP, stored=s)
         except (TypeError, KeyError):
-            fields[f] = t()
-        fields[f].stored = True
+            fields[f] = t(stored=s)
     return NestedSchema(**fields)
 
 
