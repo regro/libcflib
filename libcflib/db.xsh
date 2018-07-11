@@ -43,7 +43,7 @@ class DB:
                 git pull $LIBCFGRAPH_URL master
         else:
             LOGGER.log('grabbing initial graph', category="db")
-            git clone --quiet $LIBCFGRAPH_URL $LIBCFGRAPH_DIR
+            git clone --depth=1 --quiet $LIBCFGRAPH_URL $LIBCFGRAPH_DIR
         self.cache = {}
         cache_size = $LIBCFLIB_DB_CACHE_SIZE if cache_size is None else cache_size
         self.lru = zict.LRU(cache_size, self.cache)
