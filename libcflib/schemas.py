@@ -6,17 +6,17 @@ SCHEMAS = {
             "name": {
                 "type": "string",
                 "_description": "name of feedstock",
-                "stored": "False",
+                "stored": False,
             },
             "bad": {
                 "_description": "Reason why the packages are bad",
                 "type": "string",
-                "stored": "False",
+                "stored": False,
             },
             "archived": {
                 "_description": "If the package is " "archived",
                 "type": "bool",
-                "stored": "False",
+                "stored": False,
             },
             "PRed": {
                 "_description": "For each migrator which"
@@ -24,28 +24,28 @@ SCHEMAS = {
                 "been issued",
                 "type": "list",
                 "schema": {"type": "string"},
-                "stored": "False",
+                "stored": False,
             },
             "packages": {
                 "_description": "Links to the packages",
                 "type": "list",
                 "schema": {"type": "string"},
-                "stored": "False",
+                "stored": False,
             },
             "commit": {
                 "type": "string",
                 "_description": "The latest commit",
-                "stored": "False",
+                "stored": False,
             },
             "new_version": {
                 "anyof_type": ["string", "bool"],
                 "_description": "The new version",
-                "stored": "False",
+                "stored": False,
             },
             "meta_yaml": {
                 "type": "dict",
                 "_description": "The meta_yaml",
-                "stored": "False",
+                "stored": False,
             },
         },
     },
@@ -58,11 +58,11 @@ SCHEMAS = {
                     "channels": {
                         "schema": {"type": "string"},
                         "type": "list",
-                        "stored": "False",
+                        "stored": False,
                     },
-                    "conda_build_version": {"type": "string", "stored": "False"},
-                    "conda_private": {"type": "bool", "stored": "False"},
-                    "conda_version": {"type": "string", "stored": "False"},
+                    "conda_build_version": {"type": "string", "stored": False},
+                    "conda_private": {"type": "bool", "stored": False},
+                    "conda_version": {"type": "string", "stored": False},
                     "env_vars": {
                         "schema": {
                             "CIO_TEST": {"type": "string"},
@@ -74,20 +74,20 @@ SCHEMAS = {
                             "PYTHONPATH": {"type": "string"},
                         },
                         "type": "dict",
-                        "stored": "False",
+                        "stored": False,
                     },
-                    "home": {"type": "string", "stored": "False"},
-                    "license": {"type": "string", "stored": "False"},
-                    "license_file": {"type": "string", "stored": "False"},
+                    "home": {"type": "string", "stored": False},
+                    "license": {"type": "string", "stored": False},
+                    "license_file": {"type": "string", "stored": False},
                     "root_pkgs": {
                         "schema": {"type": "string"},
                         "type": "list",
-                        "stored": "False",
+                        "stored": False,
                     },
-                    "summary": {"type": "string", "stored": "False"},
+                    "summary": {"type": "string", "stored": False},
                 },
                 "type": "dict",
-                "stored": "False",
+                "stored": False,
             },
             "conda_build_config": {
                 "schema": {
@@ -124,9 +124,9 @@ SCHEMAS = {
                     "target_platform": {"type": "string"},
                 },
                 "type": "dict",
-                "stored": "False",
+                "stored": False,
             },
-            "files": {"schema": {"type": "string"}, "type": "list", "stored": "False"},
+            "files": {"schema": {"type": "string"}, "type": "list", "stored": False},
             "index": {
                 "schema": {
                     "arch": {"type": "string"},
@@ -141,11 +141,11 @@ SCHEMAS = {
                     "version": {"type": "string"},
                 },
                 "type": "dict",
-                "stored": "False",
+                "stored": False,
             },
-            "name": {"type": "string", "stored": "False"},
-            "metadata_version": {"type": "integer", "stored": "False"},
-            "raw_recipe": {"type": "string", "stored": "False"},
+            "name": {"type": "string", "stored": False},
+            "metadata_version": {"type": "integer", "stored": False},
+            "raw_recipe": {"type": "string", "stored": False},
             "rendered_recipe": {
                 "schema": {
                     "about": {
@@ -211,9 +211,9 @@ SCHEMAS = {
                     },
                 },
                 "type": "dict",
-                "stored": "False",
+                "stored": False,
             },
-            "version": {"type": "string", "stored": "False"},
+            "version": {"type": "string", "stored": False},
         },
     },
     "package": {
@@ -223,13 +223,13 @@ SCHEMAS = {
             "name": {
                 "_description": "Package name",
                 "type": "string",
-                "stored": "False",
+                "stored": False,
             },
             "artifacts": {
                 "_description": "Links to the artifacts",
                 "type": "list",
                 "schema": {"type": "string"},
-                "stored": "False",
+                "stored": False,
             },
             "req": {
                 "_description": "The requirements. Note that this"
@@ -237,13 +237,13 @@ SCHEMAS = {
                 "artifacts dependencies",
                 "type": "set",
                 "schema": {"type": "string"},
-                "stored": "False",
+                "stored": False,
             },
             "versions": {
                 "_description": "The versions for this package",
                 "type": "list",
                 "schema": {"type": "string"},
-                "stored": "False",
+                "stored": False,
             },
         },
     },
