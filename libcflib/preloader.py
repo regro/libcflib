@@ -17,7 +17,7 @@ import tqdm
 
 from .harvester import harvest
 from .tools import expand_file_and_mkdirs
-from .schemas import SCHEMA
+from .schemas import SCHEMAS
 from .whoosh.utils import create_whoosh_schema, add
 
 
