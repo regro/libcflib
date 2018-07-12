@@ -72,7 +72,8 @@ class NestedWriter(SegmentWriter):
 
         docboost = self._doc_boost(fields)
         fieldnames = sorted(list(get_fieldnames(fields)))
-        self._check_fields(schema, fieldnames)
+        fieldnames = [name for name in fieldnames if name in schema]
+        # self._check_fields(schema, fieldnames)
 
         perdocwriter.start_doc(docnum)
         for fieldname in fieldnames:
