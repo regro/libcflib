@@ -51,7 +51,16 @@ def index_artifact(root_path, ix, artifact, progress_callback=None):
     package, channel, arch, name = artifact.split(os.sep)
     name = os.splitext(name)[0]
     schema = create_whoosh_schema(SCHEMAS["artifact"]["schema"])
-    add(ix, schema=schema, pkg=package, channel=channel, arch=arch, name=name, **data)
+    add(
+        ix,
+        schema=schema,
+        path=artifact,
+        pkg=package,
+        channel=channel,
+        arch=arch,
+        name=name,
+        **data,
+    )
 
 
 def index(path):

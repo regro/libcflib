@@ -115,6 +115,7 @@ def reap_package(root_path, package, dst_path, src_url, progress_callback=None):
     add(
         index,
         schema=schema,
+        path=os.path.join(package, dst_path),
         pkg=package,
         channel=channel,
         arch=arch,

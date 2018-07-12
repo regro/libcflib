@@ -7,7 +7,7 @@ import json
 
 import pytest
 from whoosh import index
-from whoosh.fields import Schema, TEXT, NUMERIC
+from whoosh.fields import Schema, ID, TEXT, NUMERIC
 
 
 def rmtree(dirname):
@@ -63,6 +63,7 @@ def tmpgraphdir(tmpdir_factory, gitecho):
 def documents():
     return [
         {
+            "path": os.path.join("mypkg", "somechannel", "noarch", "pkg_0.json"),
             "pkg": "mypkg",
             "channel": "somechannel",
             "arch": "noarch",
@@ -72,6 +73,7 @@ def documents():
             "c": 3,
         },
         {
+            "path": os.path.join("mypkg", "somechannel", "noarch", "pkg_1.json"),
             "pkg": "mypkg",
             "channel": "somechannel",
             "arch": "noarch",
@@ -81,6 +83,7 @@ def documents():
             "c": 8,
         },
         {
+            "path": os.path.join("mypkg", "otherchannel", "linux-64", "pkg.json"),
             "pkg": "mypkg",
             "channel": "otherchannel",
             "arch": "linux-64",
@@ -95,6 +98,7 @@ def documents():
 @pytest.fixture(scope="session")
 def tmpgraphindex(tmpgraphdir, documents):
     schema = Schema(
+        path=ID(stored=True, unique=True),
         pkg=TEXT(stored=True),
         channel=TEXT(stored=True),
         arch=TEXT(stored=True),

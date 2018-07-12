@@ -71,8 +71,7 @@ class DB:
         # All rights reserved.
         results = libcflib.whoosh.utils.search(self._idx, query)
         for result in results:
-            path = os.path.join(result["pkg"], result["channel"],
-                                result["arch"], result["name"])
+            path = result["path"]
             if path not in self.cache:
                 data = self.get_artifact(**result)
                 self.cache[path] = data
