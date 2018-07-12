@@ -11,6 +11,7 @@ from collections import defaultdict
 from typing import Dict, Set
 
 from concurrent.futures import as_completed, ThreadPoolExecutor
+from whoosh.fields import ID, TEXT
 
 import requests
 import tqdm
@@ -18,7 +19,7 @@ import tqdm
 from .harvester import harvest
 from .tools import expand_file_and_mkdirs
 from .schemas import SCHEMAS
-from .whoosh.utils import create_whoosh_schema, add
+from .whoosh.utils import create_whoosh_schema, get_index
 
 
 channel_list = [
@@ -110,18 +111,16 @@ def reap_package(root_path, package, dst_path, src_url, progress_callback=None):
         raise ReapFailure(package, src_url, str(e))
     channel, arch, name = dst_path.split(os.sep)
     name = os.path.splitext(name)[0]
-    index = os.path.abspath(os.path.join(root_path, os.pardir, "whoosh"))
-    schema = create_whoosh_schema(SCHEMAS["artifact"]["schema"])
-    add(
-        index,
-        schema=schema,
-        path=os.path.join(package, dst_path),
-        pkg=package,
-        channel=channel,
-        arch=arch,
-        name=name,
-        **harvested_data,
+    harvested_data.update(
+        {
+            "path": os.path.join(package, dst_path),
+            "pkg": package,
+            "channel": channel,
+            "arch": arch,
+            "name": name,
+        }
     )
+    return harvested_data
 
 
 def reap(path, known_bad_packages=()):
@@ -129,6 +128,17 @@ def reap(path, known_bad_packages=()):
     print(f"TOTAL OUTSTANDING ARTIFACTS: {len(sorted_files)}")
     sorted_files = sorted_files[:500]
     progress = tqdm.tqdm(total=len(sorted_files))
+
+    index = os.path.abspath(os.path.join(path, os.pardir, "whoosh"))
+    schema = create_whoosh_schema(SCHEMAS["artifact"]["schema"])
+    schema.add("pkg", TEXT(stored=True))
+    schema.add("channel", TEXT(stored=True))
+    schema.add("arch", TEXT(stored=True))
+    schema.add("name", TEXT(stored=True))
+    schema.add("path", ID(stored=True, unique=True))
+    ix = get_index(index, schema=schema)
+    writer = ix.writer()
+
     with ThreadPoolExecutor(max_workers=20) as pool:
         futures = [
             pool.submit(
@@ -144,11 +154,14 @@ def reap(path, known_bad_packages=()):
         ]
         for f in as_completed(futures):
             try:
-                f.result()
+                data = f.result()
             except ReapFailure as e:
                 print(f"FAILURE {e.args}")
             except Exception:
                 pass
+            else:
+                writer.add_document(**data)
+    writer.commit()
 
 
 if __name__ == "__main__":

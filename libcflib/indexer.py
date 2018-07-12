@@ -13,12 +13,12 @@ except ImportError:
     load_json_file = json.load
 
 from concurrent.futures import as_completed, ThreadPoolExecutor
-from whoosh.fields import FieldConfigurationError
+from whoosh.fields import ID, TEXT
 
 import tqdm
 
 from .schemas import SCHEMAS
-from .whoosh.utils import create_whoosh_schema, add, search
+from .whoosh.utils import create_whoosh_schema, get_index
 
 
 def all_artifacts(root):
@@ -27,60 +27,66 @@ def all_artifacts(root):
         yield f.replace(f"{root}/", "")
 
 
-def indexed_artifacts(root):
-    try:
-        for res in search(index, {}):
-            yield os.path.join(
-                root, res["pkg"], res["channel"], res["arch"], res["name"] + ".json"
-            )
-    except FieldConfigurationError:
-        raise StopIteration
+def indexed_artifacts(ix):
+    with ix.searcher() as searcher:
+        for fields in searcher.all_stored_fields():
+            yield fields["path"]
 
 
-def unindexed_artifacts(root):
-    artifacts = list(all_artifacts(root))
-    indexed = list(indexed_artifacts(root))
-    return set(artifacts) - set(indexed)
+def unindexed_artifacts(root, ix):
+    artifacts = set(all_artifacts(root))
+    indexed = set(indexed_artifacts(ix))
+    return artifacts - indexed
 
 
-def index_artifact(root_path, ix, artifact, progress_callback=None):
+def get_artifact(root_path, artifact, progress_callback=None):
     if progress_callback:
         progress_callback()
     with open(artifact, "r") as f:
         data = load_json_file(f)
     package, channel, arch, name = artifact.split(os.sep)
     name = os.splitext(name)[0]
-    schema = create_whoosh_schema(SCHEMAS["artifact"]["schema"])
-    add(
-        ix,
-        schema=schema,
-        path=artifact,
-        pkg=package,
-        channel=channel,
-        arch=arch,
-        name=name,
-        **data,
+    data.update(
+        {
+            "path": artifact,
+            "pkg": package,
+            "channel": channel,
+            "arch": arch,
+            "name": name,
+        }
     )
+    return data
 
 
 def index(path):
-    ix = os.path.abspath(os.path.join(path, os.pardir, "whoosh"))
+    ind = os.path.abspath(os.path.join(path, os.pardir, "whoosh"))
+    schema = create_whoosh_schema(SCHEMAS["artifact"]["schema"])
+    schema.add("pkg", TEXT(stored=True))
+    schema.add("channel", TEXT(stored=True))
+    schema.add("arch", TEXT(stored=True))
+    schema.add("name", TEXT(stored=True))
+    schema.add("path", ID(stored=True, unique=True))
+    ix = get_index(ind, schema=schema)
+
     unindexed = unindexed_artifacts(path, ix)
     print(f"TOTAL UNINDEXED ARTIFACTS: {len(unindexed)}")
     unindexed = unindexed_artifacts[:500]
     progress = tqdm.tqdm(total=len(unindexed))
+
+    writer = ix.writer()
     with ThreadPoolExecutor(max_workers=20) as pool:
         futures = [
-            pool.submit(
-                index_artifact, path, ix, artifact, progress_callback=progress.update
-            )
+            pool.submit(get_artifact, path, artifact, progress_callback=progress.update)
             for artifact in unindexed
         ]
         for f in as_completed(futures):
             try:
-                f.result()
+                data = f.result()
             except Exception:
                 pass
+            else:
+                writer.add_document(**data)
+    writer.commit()
 
 
 if __name__ == "__main__":

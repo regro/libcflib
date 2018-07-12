@@ -3,7 +3,7 @@ import os.path
 
 from whoosh.index import exists_in
 from whoosh.filedb.filestore import FileStorage
-from whoosh.fields import ID, TEXT, KEYWORD, BOOLEAN, NUMERIC
+from whoosh.fields import TEXT, KEYWORD, BOOLEAN, NUMERIC
 from libcflib.whoosh.fields import DICT, NestedSchema
 from libcflib.whoosh.index import NestedIndex
 
@@ -65,17 +65,7 @@ def get_index(index, indexname="ARTIFACTS", schema=None):
     if exists_in(index, indexname):
         return NestedIndex(storage, schema=schema, indexname=indexname)
     else:
-        ix = NestedIndex.create(storage, schema, indexname)
-        if indexname != "ARTIFACTS":
-            return ix
-        writer = ix.writer()
-        writer.add_field("pkg", TEXT(stored=True))
-        writer.add_field("channel", TEXT(stored=True))
-        writer.add_field("arch", TEXT(stored=True))
-        writer.add_field("name", TEXT(stored=True))
-        writer.add_field("path", ID(stored=True, unique=True))
-        writer.commit()
-        return ix
+        return NestedIndex.create(storage, schema, indexname)
 
 
 def add(index, indexname="ARTIFACTS", schema=None, **kwargs):
