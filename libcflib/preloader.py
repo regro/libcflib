@@ -17,6 +17,8 @@ import tqdm
 
 from .harvester import harvest
 from .tools import expand_file_and_mkdirs
+from .schemas import SCHEMA
+from .whoosh.utils import create_whoosh_schema, add
 
 
 channel_list = [
@@ -106,6 +108,19 @@ def reap_package(root_path, package, dst_path, src_url, progress_callback=None):
             json.dump(harvested_data, fo, indent=1, sort_keys=True)
     except Exception as e:
         raise ReapFailure(package, src_url, str(e))
+    channel, arch, name = dst_path.split(os.sep)
+    name = os.path.splitext(name)[0]
+    index = os.path.abspath(os.path.join(root_path, os.pardir, "whoosh"))
+    schema = create_whoosh_schema(SCHEMAS["artifact"]["schema"])
+    add(
+        index,
+        schema=schema,
+        pkg=package,
+        channel=channel,
+        arch=arch,
+        name=name,
+        **harvested_data,
+    )
 
 
 def reap(path, known_bad_packages=()):
