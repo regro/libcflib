@@ -71,13 +71,15 @@ class DB:
         # All rights reserved.
         results = libcflib.whoosh.utils.search(self._idx, query)
         for result in results:
-            if result not in self.cache:
+            path = os.path.join(result["pkg"], result["channel"],
+                                result["arch"], result["name"])
+            if path not in self.cache:
                 data = self.get_artifact(**result)
-                self.cache[result] = data
+                self.cache[path] = data
                 # Cache the time so we can timeout the record
-                self.times[result] = time.time()
+                self.times[path] = time.time()
             else:
-                data = self.cache[results]
+                data = self.cache[path]
             yield data
 
     def load_channel_graphs(self):

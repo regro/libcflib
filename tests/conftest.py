@@ -3,10 +3,12 @@ import sys
 import shutil
 import builtins
 import subprocess
+import json
 
 import pytest
 from whoosh import index
-from whoosh.fields import Schema, NUMERIC
+from whoosh.fields import Schema, TEXT, NUMERIC
+
 
 def rmtree(dirname):
     """Remove a directory, even if it has read-only files (Windows).
@@ -43,7 +45,9 @@ def gitecho():
 def tmpgraphdir(tmpdir_factory, gitecho):
     env = builtins.__xonsh_env__
     d = tmpdir_factory.mktemp("graph", numbered=False)
-    d.mkdir("artifacts").mkdir("mypkg").mkdir("/somechannel").mkdir("noarch")
+    pkg = d.mkdir("artifacts").mkdir("mypkg")
+    pkg.mkdir("somechannel").mkdir("noarch")
+    pkg.mkdir("otherchannel").mkdir("linux-64")
     ix = d.mkdir("whoosh")
     orig_libcfgraph_dir = env.get("LIBCFGRAPH_DIR")
     orig_libcfgraph_index = env.get("LIBCFGRAPH_INDEX")
@@ -58,17 +62,60 @@ def tmpgraphdir(tmpdir_factory, gitecho):
 @pytest.fixture(scope="session")
 def documents():
     return [
-            {'a':3, 'b':5, 'c':3},
-            {'a':3, 'b':2, 'c':8},
-            {'a':4, 'b':2, 'c':9},
-           ]
+        {
+            "pkg": "mypkg",
+            "channel": "somechannel",
+            "arch": "noarch",
+            "name": "pkg_0",
+            "a": 3,
+            "b": 5,
+            "c": 3,
+        },
+        {
+            "pkg": "mypkg",
+            "channel": "somechannel",
+            "arch": "noarch",
+            "name": "pkg_1",
+            "a": 3,
+            "b": 2,
+            "c": 8,
+        },
+        {
+            "pkg": "mypkg",
+            "channel": "otherchannel",
+            "arch": "linux-64",
+            "name": "pkg",
+            "a": 4,
+            "b": 2,
+            "c": 9,
+        },
+    ]
+
 
 @pytest.fixture(scope="session")
 def tmpgraphindex(tmpgraphdir, documents):
-    schema = Schema(a=NUMERIC, b=NUMERIC, c=NUMERIC)
-    ix = index.create_in(os.path.join(tmpgraphdir, 'whoosh'), schema, 'ARTIFACTS')
+    schema = Schema(
+        pkg=TEXT(stored=True),
+        channel=TEXT(stored=True),
+        arch=TEXT(stored=True),
+        name=TEXT(stored=True),
+        a=NUMERIC,
+        b=NUMERIC,
+        c=NUMERIC,
+    )
+    ix = index.create_in(os.path.join(tmpgraphdir, "whoosh"), schema, "ARTIFACTS")
     writer = ix.writer()
     for doc in documents:
+        art_path = os.path.join(
+            tmpgraphdir,
+            "artifacts",
+            doc["pkg"],
+            doc["channel"],
+            doc["arch"],
+            doc["name"] + ".json",
+        )
+        with open(art_path, "w") as f:
+            json.dump(doc, f)
         writer.add_document(**doc)
     writer.commit()
     yield ix

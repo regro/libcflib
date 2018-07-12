@@ -220,11 +220,7 @@ SCHEMAS = {
         "_description": "Schema for the package",
         "type": "dict",
         "schema": {
-            "name": {
-                "_description": "Package name",
-                "type": "string",
-                "stored": False,
-            },
+            "name": {"_description": "Package name", "type": "string", "stored": False},
             "artifacts": {
                 "_description": "Links to the artifacts",
                 "type": "list",

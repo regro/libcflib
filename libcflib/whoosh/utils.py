@@ -65,7 +65,16 @@ def get_index(index, indexname="ARTIFACTS", schema=None):
     if exists_in(index, indexname):
         return NestedIndex(storage, schema=schema, indexname=indexname)
     else:
-        return NestedIndex.create(storage, schema, indexname)
+        ix = NestedIndex.create(storage, schema, indexname)
+        if indexname != "ARTIFACTS":
+            return ix
+        writer = ix.writer()
+        writer.add_field("pkg", TEXT(stored=True))
+        writer.add_field("channel", TEXT(stored=True))
+        writer.add_field("arch", TEXT(stored=True))
+        writer.add_field("name", TEXT(stored=True))
+        writer.commit()
+        return ix
 
 
 def add(index, indexname="ARTIFACTS", schema=None, **kwargs):
