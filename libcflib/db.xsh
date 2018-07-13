@@ -58,7 +58,7 @@ class DB:
 
         Parameters
         ----------
-        query: dict
+        query : dict
             The keys to search on. e.g. `{"about.conda_version": "4.2.13"}`
 
         Yields
