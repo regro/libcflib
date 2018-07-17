@@ -3,7 +3,7 @@ import os.path
 
 from whoosh.index import exists_in
 from whoosh.filedb.filestore import FileStorage
-from whoosh.fields import TEXT, KEYWORD, BOOLEAN, NUMERIC
+from whoosh.fields import KEYWORD, BOOLEAN, NUMERIC
 from libcflib.whoosh.fields import DICT, STRINGNUM, NestedSchema
 from libcflib.whoosh.index import NestedIndex
 

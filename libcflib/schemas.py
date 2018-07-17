@@ -137,7 +137,7 @@ SCHEMAS = {
                     "name": {"type": "string"},
                     "platform": {"type": "string"},
                     "subdir": {"type": "string"},
-                    #"timestamp": {"type": "integer"},
+                    # "timestamp": {"type": "integer"},
                     "version": {"type": "string"},
                 },
                 "type": "dict",

@@ -43,7 +43,7 @@ class DICT(FieldType):
 
 class STRINGNUM(TEXT):
     """Special field type for either a string or a number."""
-    
+
     def index(self, value, **kwargs):
         value = str(value)
         for item in super().index(value, **kwargs):
