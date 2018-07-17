@@ -71,7 +71,7 @@ def index(path):
 
     unindexed = unindexed_artifacts(path, ix)
     print(f"TOTAL UNINDEXED ARTIFACTS: {len(unindexed)}")
-    unindexed = list(unindexed)[:500]
+    unindexed = list(unindexed)[:5000]
     progress = tqdm.tqdm(total=len(unindexed))
 
     writer = ix.writer()
