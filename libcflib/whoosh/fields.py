@@ -4,7 +4,7 @@ import sys
 import re
 import fnmatch
 
-from whoosh.fields import FieldType, Schema, FieldConfigurationError
+from whoosh.fields import FieldType, Schema, FieldConfigurationError, TEXT
 
 
 class DICT(FieldType):
@@ -39,6 +39,15 @@ class DICT(FieldType):
                     subfield = self.type_map[v["type"]]()
             subfield.stored = v.get("stored", self.stored) and self.stored
             yield k, subfield
+
+
+class STRINGNUM(TEXT):
+    """Special field type for either a string or a number."""
+    
+    def index(self, value, **kwargs):
+        value = str(value)
+        for item in super().index(value, **kwargs):
+            yield item
 
 
 class NestedSchema(Schema):

@@ -1,5 +1,7 @@
 # Copyright 2007 Matt Chaput. All rights reserved.
 """Custom whoosh writers."""
+from collections import Hashable
+
 from whoosh.util.text import utf8encode
 from whoosh.writing import SegmentWriter
 
@@ -29,7 +31,7 @@ def get_value(fields, fieldname):
     return value
 
 
-def get_fieldnames(fields, base=""):
+def get_fieldnames(fields, base=[]):
     """Get the names of the fields in a nested dict.
 
     Parameters
@@ -50,14 +52,11 @@ def get_fieldnames(fields, base=""):
         for name, value in fields.items():
             if name.startswith("_"):
                 continue
-            base += name + "."
-            for fn in get_fieldnames(value, base):
+            keys = base + [name]
+            for fn in get_fieldnames(value, keys):
                 yield fn
-            base = base[:-2]
     except AttributeError:
-        base = base[:-1]
-        yield base
-        base = base[:-1]
+        yield ".".join(base)
 
 
 class NestedWriter(SegmentWriter):
@@ -79,6 +78,8 @@ class NestedWriter(SegmentWriter):
         for fieldname in fieldnames:
             value = get_value(fields, fieldname)
             if value is None:
+                continue
+            if not isinstance(value, Hashable):
                 continue
             field = schema[fieldname]
 

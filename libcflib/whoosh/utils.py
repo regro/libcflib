@@ -4,12 +4,12 @@ import os.path
 from whoosh.index import exists_in
 from whoosh.filedb.filestore import FileStorage
 from whoosh.fields import TEXT, KEYWORD, BOOLEAN, NUMERIC
-from libcflib.whoosh.fields import DICT, NestedSchema
+from libcflib.whoosh.fields import DICT, STRINGNUM, NestedSchema
 from libcflib.whoosh.index import NestedIndex
 
 
 TYPE_MAP = {
-    "string": TEXT,
+    "string": STRINGNUM,
     "list": KEYWORD,
     "set": KEYWORD,
     "bool": BOOLEAN,
