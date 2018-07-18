@@ -31,7 +31,7 @@ def get_value(fields, fieldname):
     return value
 
 
-def get_fieldnames(fields, base=[]):
+def get_fieldnames(fields, base=()):
     """Get the names of the fields in a nested dict.
 
     Parameters
@@ -52,7 +52,7 @@ def get_fieldnames(fields, base=[]):
         for name, value in fields.items():
             if name.startswith("_"):
                 continue
-            keys = base + [name]
+            keys = base + (name,)
             for fn in get_fieldnames(value, keys):
                 yield fn
     except AttributeError:
