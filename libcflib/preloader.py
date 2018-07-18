@@ -134,7 +134,7 @@ def reap(path, known_bad_packages=()):
     schema.add("pkg", TEXT(stored=True))
     schema.add("channel", TEXT(stored=True))
     schema.add("arch", TEXT(stored=True))
-    schema.add("name", TEXT(stored=True))
+    schema.add("filename", TEXT(stored=True))
     schema.add("path", ID(stored=True, unique=True))
     ix = get_index(index, schema=schema)
     writer = ix.writer()
