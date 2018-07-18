@@ -22,25 +22,40 @@ from .schemas import SCHEMAS
 from .whoosh.utils import create_whoosh_schema, get_index
 
 
-def all_artifacts(root):
+def _all_artifacts(root):
     files = glob.glob(f"{root}/*/*/*/*.json")
     for f in files:
         yield f.replace(f"{root}", "")
 
 
-def indexed_artifacts(root, ix):
+def _indexed_artifacts(root, ix):
     with ix.searcher() as searcher:
         for fields in searcher.all_stored_fields():
             yield fields["path"]
 
 
-def unindexed_artifacts(root, ix):
-    artifacts = set(all_artifacts(root))
-    indexed = set(indexed_artifacts(root, ix))
+def _unindexed_artifacts(root, ix):
+    artifacts = set(_all_artifacts(root))
+    indexed = set(_indexed_artifacts(root, ix))
     return artifacts - indexed
 
 
 def get_artifact(root_path, artifact, progress_callback=None):
+    """Get the data from an artifact file.
+
+    Parameters
+    ----------
+    root_path : str
+        A path to the directory containing the artifact.
+    artifact : str
+        The path to the artifact relative to `root_path`.
+
+    Returns
+    -------
+    dict
+        The data from the artifact file.
+    """
+
     if progress_callback:
         progress_callback()
     with open(os.path.join(root_path, artifact), "r") as f:
@@ -60,6 +75,14 @@ def get_artifact(root_path, artifact, progress_callback=None):
 
 
 def index(path):
+    """Index all of the artifacts in a specified directory.
+
+    Parameters
+    ----------
+    path : str
+        The path to the directory containing the artifacts to be indexed.
+    """
+
     ind = os.path.abspath(os.path.join(path, os.pardir, "whoosh"))
     schema = create_whoosh_schema(SCHEMAS["artifact"]["schema"])
     schema.add("pkg", TEXT(stored=True))
@@ -69,7 +92,7 @@ def index(path):
     schema.add("path", ID(stored=True, unique=True))
     ix = get_index(ind, schema=schema)
 
-    unindexed = unindexed_artifacts(path, ix)
+    unindexed = _unindexed_artifacts(path, ix)
     print(f"TOTAL UNINDEXED ARTIFACTS: {len(unindexed)}")
     unindexed = list(unindexed)[:5000]
     progress = tqdm.tqdm(total=len(unindexed))
