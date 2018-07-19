@@ -3,13 +3,13 @@ import os.path
 
 from whoosh.index import exists_in
 from whoosh.filedb.filestore import FileStorage
-from whoosh.fields import TEXT, KEYWORD, BOOLEAN, NUMERIC
-from libcflib.whoosh.fields import DICT, NestedSchema
+from whoosh.fields import KEYWORD, BOOLEAN, NUMERIC
+from libcflib.whoosh.fields import DICT, STRINGNUM, NestedSchema
 from libcflib.whoosh.index import NestedIndex
 
 
 TYPE_MAP = {
-    "string": TEXT,
+    "string": STRINGNUM,
     "list": KEYWORD,
     "set": KEYWORD,
     "bool": BOOLEAN,
@@ -32,17 +32,16 @@ def create_whoosh_schema(schema):
     libcflib.fields.NestedSchema
         A whoosh schema with the same structure as the input.
     """
-    fields = {k: TYPE_MAP[v["type"]] for k, v in schema.items()}
-    for f, t in fields.items():
+    fields = {k: (TYPE_MAP[v["type"]], v["stored"]) for k, v in schema.items()}
+    for f, (t, s) in fields.items():
         try:
-            fields[f] = t(schema=schema[f]["schema"], type_map=TYPE_MAP)
+            fields[f] = t(schema=schema[f]["schema"], type_map=TYPE_MAP, stored=s)
         except (TypeError, KeyError):
-            fields[f] = t()
-        fields[f].stored = True
+            fields[f] = t(stored=s)
     return NestedSchema(**fields)
 
 
-def get_index(index, schema=None):
+def get_index(index, indexname="ARTIFACTS", schema=None):
     """Open or create a whoosh index.
 
     Opens a whoosh index with the specified name and schema.
@@ -60,17 +59,16 @@ def get_index(index, schema=None):
     libcflib.index.NestedIndex
         A whoosh index with the specified name and schema.
     """
-    indexname = "MAIN"
     storage = FileStorage(index)
     if not os.path.exists(index):
         os.mkdir(index)
-    if exists_in(index):
+    if exists_in(index, indexname):
         return NestedIndex(storage, schema=schema, indexname=indexname)
     else:
         return NestedIndex.create(storage, schema, indexname)
 
 
-def add(index, schema=None, **kwargs):
+def add(index, indexname="ARTIFACTS", schema=None, **kwargs):
     """Add a document to an index.
 
     Parameters
@@ -82,13 +80,13 @@ def add(index, schema=None, **kwargs):
     **kwargs
         Fields and values of the document to add.
     """
-    ix = get_index(index, schema)
+    ix = get_index(index, indexname, schema)
     writer = ix.writer()
     writer.add_document(**kwargs)
     writer.commit()
 
 
-def add_from(index, docs, schema=None):
+def add_from(index, docs, indexname="ARTIFACTS", schema=None):
     """Add multiple documents to an index.
 
     Parameters
@@ -100,7 +98,7 @@ def add_from(index, docs, schema=None):
     schema : whoosh.index.Schema
         The schema to use for the index.
     """
-    ix = get_index(index, schema)
+    ix = get_index(index, indexname, schema)
     writer = ix.writer()
     for doc in docs:
         doc = {k: v for k, v in doc.items() if k in ix.schema.names()}
@@ -108,7 +106,7 @@ def add_from(index, docs, schema=None):
     writer.commit()
 
 
-def search(index, query):
+def search(index, query, indexname="ARTIFACTS"):
     """Search an index.
 
     Parameters
@@ -123,6 +121,6 @@ def search(index, query):
     list of dict
         A list of the results matching the query.
     """
-    ix = get_index(index)
+    ix = get_index(index, indexname)
     with ix.searcher() as searcher:
         return [dict(res) for res in searcher.documents(**query)]

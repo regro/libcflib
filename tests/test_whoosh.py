@@ -5,18 +5,20 @@ from libcflib.whoosh.utils import create_whoosh_schema, add, search
 
 def test_search(tmpdir):
     schema = {
-        "a": {"type": "string"},
-        "b": {"type": "integer"},
+        "a": {"type": "string", "stored": True},
+        "b": {"type": "integer", "stored": True},
         "c": {
             "type": "dict",
             "schema": {
-                "a": {"type": "string"},
+                "a": {"type": "string", "stored": True},
                 "d": {
                     "type": "dict",
                     "schema": {"e": {"type": "integer"}, "f": {"type": "string"}},
+                    "stored": True,
                 },
-                "e": {"type": "float"},
+                "e": {"type": "float", "stored": False},
             },
+            "stored": True,
         },
     }
     ws = create_whoosh_schema(schema)
@@ -27,10 +29,10 @@ def test_search(tmpdir):
         "b": 3,
         "c": {"a": "world", "d": {"e": 5, "f": "hi"}, "e": 3.5},
     }
-    add(index, ws, **doc)
+    add(index, schema=ws, **doc)
 
     query = {"c.a": "world", "c.d.e": 5, "c.e": 3.5}
     results = search(index, query)
     assert results == [
-        {"a": "hello", "b": 3, "c.a": "world", "c.d.e": 5, "c.d.f": "hi", "c.e": 3.5}
+        {"a": "hello", "b": 3, "c.a": "world", "c.d.e": 5, "c.d.f": "hi"}
     ]
