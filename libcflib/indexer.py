@@ -25,7 +25,7 @@ from .whoosh.utils import create_whoosh_schema, get_index
 def _all_artifacts(root):
     files = glob.glob(f"{root}/*/*/*/*.json")
     for f in files:
-        yield f.replace(f"{root}", "")
+        yield f.replace(f"{root}/", "")
 
 
 def _indexed_artifacts(root, ix):
