@@ -141,7 +141,7 @@ def reap(path, known_bad_packages=()):
         ]
         for f in as_completed(futures):
             try:
-                data = f.result()
+                f.result()
             except ReapFailure as e:
                 print(f"FAILURE {e.args}")
             except Exception:
