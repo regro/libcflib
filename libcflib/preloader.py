@@ -11,15 +11,12 @@ from collections import defaultdict
 from typing import Dict, Set
 
 from concurrent.futures import as_completed, ThreadPoolExecutor
-from whoosh.fields import ID, TEXT
 
 import requests
 import tqdm
 
 from .harvester import harvest
 from .tools import expand_file_and_mkdirs
-from .schemas import SCHEMAS
-from .whoosh.utils import create_whoosh_schema, get_index
 
 
 channel_list = [
@@ -129,16 +126,6 @@ def reap(path, known_bad_packages=()):
     sorted_files = sorted_files[:500]
     progress = tqdm.tqdm(total=len(sorted_files))
 
-    index = os.path.abspath(os.path.join(path, os.pardir, "whoosh"))
-    schema = create_whoosh_schema(SCHEMAS["artifact"]["schema"])
-    schema.add("pkg", TEXT(stored=True))
-    schema.add("channel", TEXT(stored=True))
-    schema.add("arch", TEXT(stored=True))
-    schema.add("filename", TEXT(stored=True))
-    schema.add("path", ID(stored=True, unique=True))
-    ix = get_index(index, schema=schema)
-    writer = ix.writer()
-
     with ThreadPoolExecutor(max_workers=20) as pool:
         futures = [
             pool.submit(
@@ -154,14 +141,11 @@ def reap(path, known_bad_packages=()):
         ]
         for f in as_completed(futures):
             try:
-                data = f.result()
+                f.result()
             except ReapFailure as e:
                 print(f"FAILURE {e.args}")
             except Exception:
                 pass
-            else:
-                writer.add_document(**data)
-    writer.commit()
 
 
 if __name__ == "__main__":
