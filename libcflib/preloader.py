@@ -11,15 +11,12 @@ from collections import defaultdict
 from typing import Dict, Set
 
 from concurrent.futures import as_completed, ThreadPoolExecutor
-from whoosh.fields import ID, TEXT
 
 import requests
 import tqdm
 
 from .harvester import harvest
 from .tools import expand_file_and_mkdirs
-from .schemas import SCHEMAS
-from .whoosh.utils import create_whoosh_schema, get_index
 
 
 channel_list = [
