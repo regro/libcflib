@@ -129,16 +129,6 @@ def reap(path, known_bad_packages=()):
     sorted_files = sorted_files[:500]
     progress = tqdm.tqdm(total=len(sorted_files))
 
-    index = os.path.abspath(os.path.join(path, os.pardir, "whoosh"))
-    schema = create_whoosh_schema(SCHEMAS["artifact"]["schema"])
-    schema.add("pkg", TEXT(stored=True))
-    schema.add("channel", TEXT(stored=True))
-    schema.add("arch", TEXT(stored=True))
-    schema.add("filename", TEXT(stored=True))
-    schema.add("path", ID(stored=True, unique=True))
-    ix = get_index(index, schema=schema)
-    writer = ix.writer()
-
     with ThreadPoolExecutor(max_workers=20) as pool:
         futures = [
             pool.submit(
@@ -159,9 +149,6 @@ def reap(path, known_bad_packages=()):
                 print(f"FAILURE {e.args}")
             except Exception:
                 pass
-            else:
-                writer.add_document(**data)
-    writer.commit()
 
 
 if __name__ == "__main__":
