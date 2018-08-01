@@ -40,7 +40,7 @@ class DB:
         if os.path.exists($LIBCFGRAPH_DIR):
             LOGGER.log('pulling latest graph', category="db")
             with indir($LIBCFGRAPH_DIR):
-                git pull $LIBCFGRAPH_URL master
+                git pull $LIBCFGRAPH_URL master -s recursive -X theirs --no-edit
         else:
             LOGGER.log('grabbing initial graph', category="db")
             git clone --quiet $LIBCFGRAPH_URL $LIBCFGRAPH_DIR
