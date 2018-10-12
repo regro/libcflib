@@ -119,7 +119,7 @@ class Artifact(Model):
         super().__init__()
 
     def _load(self):
-        env = builtins.__xonsh_env__
+        env = builtins.__xonsh__.env
         filename = os.path.join(env.get("LIBCFGRAPH_DIR"), "artifacts", self._path)
         with open(filename, "r") as f:
             self._d.update(load_json_file(f))
@@ -143,7 +143,7 @@ class ChannelGraph(Model):
         return f"ChannelGraph({self.name!r})"
 
     def _load(self):
-        env = builtins.__xonsh_env__
+        env = builtins.__xonsh__.env
         filename = os.path.join(env.get("LIBCFGRAPH_DIR"), self._name + ".json")
         # TODO: use networkx to get the data so we have edges
         with open(filename, "r") as f:
@@ -162,7 +162,7 @@ class Package(Model):
         return f"Package({self.name!r})"
 
     def _load(self):
-        env = builtins.__xonsh_env__
+        env = builtins.__xonsh__.env
         arches = set()
         channels = set()
         artifacts = defaultdict(lambda: defaultdict(set))
@@ -194,7 +194,7 @@ class Feedstock(Model):
         super().__init__()
 
     def _load(self):
-        env = builtins.__xonsh_env__
+        env = builtins.__xonsh__.env
         filename = os.path.join(
             env.get("LIBCFGRAPH_DIR"), "conda-forge-feedstocks.json"
         )

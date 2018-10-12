@@ -36,7 +36,7 @@ def is_dict_str_str_or_none(x):
 
 def libcflib_config_dir():
     """Ensures and returns the $LIBCFLIB_CONFIG_DIR"""
-    env = builtins.__xonsh_env__
+    env = builtins.__xonsh__.env
     fcd = os.path.expanduser(os.path.join(env.get("XDG_CONFIG_HOME"), "libcflib"))
     os.makedirs(fcd, exist_ok=True)
     return fcd
@@ -44,7 +44,7 @@ def libcflib_config_dir():
 
 def libcflib_data_dir():
     """Ensures and returns the $LIBCFLIB_DATA_DIR"""
-    env = builtins.__xonsh_env__
+    env = builtins.__xonsh__.env
     fdd = os.path.expanduser(os.path.join(env.get("XDG_DATA_HOME"), "libcflib"))
     os.makedirs(fdd, exist_ok=True)
     return fdd
@@ -52,7 +52,7 @@ def libcflib_data_dir():
 
 def libcflib_logfile():
     """Ensures and returns the $LIBCFLIB_LOGFILE"""
-    env = builtins.__xonsh_env__
+    env = builtins.__xonsh__.env
     flf = os.path.join(env.get("LIBCFLIB_DATA_DIR"), "log.json")
     flf = expand_file_and_mkdirs(flf)
     return flf
@@ -60,14 +60,14 @@ def libcflib_logfile():
 
 def libcfgraph_dir():
     """Ensures and returns the $LIBCFGRAPH_DIR"""
-    env = builtins.__xonsh_env__
+    env = builtins.__xonsh__.env
     s = os.path.join(env.get("LIBCFLIB_DATA_DIR"), "libcfgraph")
     return s
 
 
 def libcfgraph_index():
     """Ensures and returns the $LIBCFGRAPH_INDEX"""
-    env = builtins.__xonsh_env__
+    env = builtins.__xonsh__.env
     s = os.path.join(env.get("LIBCFGRAPH_DIR"), "whoosh")
     return s
 
@@ -152,7 +152,7 @@ def setup():
     global _ENV_SETUP
     if _ENV_SETUP:
         return
-    env = builtins.__xonsh_env__
+    env = builtins.__xonsh__.env
     updates = {}
     for key, (default, validate, convert, detype, docstr) in ENVVARS.items():
         if key in env:
@@ -168,7 +168,7 @@ def teardown():
     global _ENV_SETUP
     if not _ENV_SETUP:
         return
-    env = builtins.__xonsh_env__
+    env = builtins.__xonsh__.env
     for key in ENVVARS:
         env._defaults.pop(key)
         env._ensurers.pop(key)
@@ -203,7 +203,7 @@ def libcflib_detype_env():
     """Returns a detyped version of the environment containing only the fixie
     environment variables.
     """
-    env = builtins.__xonsh_env__
+    env = builtins.__xonsh__.env
     keep = libcflib_envvar_names()
     denv = {k: v for k, v in env.detype().items() if k in keep}
     return denv

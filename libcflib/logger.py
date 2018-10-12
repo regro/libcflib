@@ -67,7 +67,7 @@ class Logger:
     def filename(self):
         value = self._filename
         if value is None:
-            value = builtins.__xonsh_env__.get("LIBCFLIB_LOGFILE")
+            value = builtins.__xonsh__.env.get("LIBCFLIB_LOGFILE")
         return value
 
     @filename.setter
