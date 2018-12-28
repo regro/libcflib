@@ -13,14 +13,6 @@ except ImportError:
 
     load_json_file = json.load
 
-from concurrent.futures import as_completed, ThreadPoolExecutor
-from whoosh.fields import ID, TEXT
-
-import tqdm
-
-from .schemas import SCHEMAS
-from .whoosh.utils import create_whoosh_schema, get_index
-
 
 def _all_artifacts(root):
     files = glob.glob(f"{root}/*/*/*/*.json")
@@ -82,35 +74,7 @@ def index(path):
     path : str
         The path to the directory containing the artifacts to be indexed.
     """
-
-    ind = os.path.abspath(os.path.join(path, os.pardir, "whoosh"))
-    schema = create_whoosh_schema(SCHEMAS["artifact"]["schema"])
-    schema.add("pkg", TEXT(stored=True))
-    schema.add("channel", TEXT(stored=True))
-    schema.add("arch", TEXT(stored=True))
-    schema.add("filename", TEXT(stored=True))
-    schema.add("path", ID(stored=True, unique=True))
-    ix = get_index(ind, schema=schema)
-
-    unindexed = _unindexed_artifacts(path, ix)
-    print(f"TOTAL UNINDEXED ARTIFACTS: {len(unindexed)}")
-    unindexed = list(unindexed)[:5000]
-    progress = tqdm.tqdm(total=len(unindexed))
-
-    writer = ix.writer()
-    with ThreadPoolExecutor(max_workers=1) as pool:
-        futures = [
-            pool.submit(get_artifact, path, artifact, progress_callback=progress.update)
-            for artifact in unindexed
-        ]
-        for f in as_completed(futures):
-            try:
-                data = f.result()
-            except Exception as e:
-                print(e)
-            else:
-                writer.add_document(**data)
-    writer.commit()
+    raise NotImplementedError("indexer needs to be rewritten to not use whoosh")
 
 
 if __name__ == "__main__":

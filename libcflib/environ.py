@@ -68,7 +68,7 @@ def libcfgraph_dir():
 def libcfgraph_index():
     """Ensures and returns the $LIBCFGRAPH_INDEX"""
     env = builtins.__xonsh__.env
-    s = os.path.join(env.get("LIBCFGRAPH_DIR"), "whoosh")
+    s = os.path.join(env.get("LIBCFGRAPH_DIR"), "index")
     return s
 
 
@@ -124,7 +124,7 @@ ENVVARS = OrderedDict(
                 is_string,
                 str,
                 ensure_string,
-                "Path to the libcfgraph whoosh index.",
+                "Path to the libcfgraph search index.",
             ),
         ),
         (
