@@ -9,8 +9,6 @@ from libcflib.tools import indir
 from libcflib.logger import LOGGER
 from libcflib.models import Artifact, Package, ChannelGraph
 
-import libcflib.whoosh.utils
-
 
 class DB:
     """A database interface to the graph information"""
@@ -66,20 +64,7 @@ class DB:
         res :
             The loaded artifact search results
         """
-        # Caching forked from Streamz
-        # Copyright (c) 2017, Continuum Analytics, Inc. and contributors
-        # All rights reserved.
-        results = libcflib.whoosh.utils.search(self._idx, query)
-        for result in results:
-            path = result["path"]
-            if path not in self.cache:
-                data = self.get_artifact(**result)
-                self.cache[path] = data
-                # Cache the time so we can timeout the record
-                self.times[path] = time.time()
-            else:
-                data = self.cache[path]
-            yield data
+        raise NotImplementedError("search not yet implemented")
 
     def load_channel_graphs(self):
         """Loads channel data for known channels"""

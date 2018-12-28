@@ -13,16 +13,14 @@ install_reqs = install_reqs.split()
 
 setup_kwargs = {
     "name": "libcflib",
-    "packages": ["libcflib", "libcflib.rest", "libcflib.whoosh"],
+    "packages": ["libcflib", "libcflib.rest"],
     "package_dir": {
         "libcflib": "libcflib",
         "libcflib.rest": "libcflib/rest",
-        "libcflib.whoosh": "libcflib/whoosh",
     },
     "package_data": {
         "libcflib": ["*.xsh"],
         "libcflib.rest": ["*.xsh"],
-        "libcflib.whoosh": ["*.xsh"],
     },
     "long_description": open("README.md").read(),
     "version": VERSION,

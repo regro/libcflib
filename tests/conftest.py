@@ -6,8 +6,6 @@ import subprocess
 import json
 
 import pytest
-from whoosh import index
-from whoosh.fields import Schema, ID, TEXT, NUMERIC
 
 
 def rmtree(dirname):
@@ -48,9 +46,9 @@ def tmpgraphdir(tmpdir_factory, gitecho):
     pkg = d.mkdir("artifacts").mkdir("mypkg")
     pkg.mkdir("somechannel").mkdir("noarch")
     pkg.mkdir("otherchannel").mkdir("linux-64")
-    ix = d.mkdir("whoosh")
     orig_libcfgraph_dir = env.get("LIBCFGRAPH_DIR")
     orig_libcfgraph_index = env.get("LIBCFGRAPH_INDEX")
+    ix = d.mkdir("index")
     env["LIBCFGRAPH_DIR"] = d
     env["LIBCFGRAPH_INDEX"] = os.path.join(ix)
     yield d
@@ -93,33 +91,3 @@ def documents():
             "c": 9,
         },
     ]
-
-
-@pytest.fixture(scope="session")
-def tmpgraphindex(tmpgraphdir, documents):
-    schema = Schema(
-        path=ID(stored=True, unique=True),
-        pkg=TEXT(stored=True),
-        channel=TEXT(stored=True),
-        arch=TEXT(stored=True),
-        name=TEXT(stored=True),
-        a=NUMERIC,
-        b=NUMERIC,
-        c=NUMERIC,
-    )
-    ix = index.create_in(os.path.join(tmpgraphdir, "whoosh"), schema, "ARTIFACTS")
-    writer = ix.writer()
-    for doc in documents:
-        art_path = os.path.join(
-            tmpgraphdir,
-            "artifacts",
-            doc["pkg"],
-            doc["channel"],
-            doc["arch"],
-            doc["name"] + ".json",
-        )
-        with open(art_path, "w") as f:
-            json.dump(doc, f)
-        writer.add_document(**doc)
-    writer.commit()
-    yield ix
