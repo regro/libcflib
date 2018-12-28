@@ -3,7 +3,6 @@ import sys
 import shutil
 import builtins
 import subprocess
-import json
 
 import pytest
 
@@ -41,7 +40,7 @@ def gitecho():
 
 @pytest.fixture(scope="session")
 def tmpgraphdir(tmpdir_factory, gitecho):
-    env = builtins.__xonsh_env__
+    env = builtins.__xonsh__.env
     d = tmpdir_factory.mktemp("graph", numbered=False)
     pkg = d.mkdir("artifacts").mkdir("mypkg")
     pkg.mkdir("somechannel").mkdir("noarch")

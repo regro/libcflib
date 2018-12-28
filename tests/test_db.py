@@ -9,4 +9,3 @@ def db_fixture(tmpgraphdir, gitecho):
 
 def test_load_packages(db_fixture):
     db_fixture.load_packages()
-

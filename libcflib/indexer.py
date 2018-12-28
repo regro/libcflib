@@ -13,12 +13,6 @@ except ImportError:
 
     load_json_file = json.load
 
-from concurrent.futures import as_completed, ThreadPoolExecutor
-
-import tqdm
-
-from .schemas import SCHEMAS
-
 
 def _all_artifacts(root):
     files = glob.glob(f"{root}/*/*/*/*.json")
