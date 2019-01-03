@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 import shutil
 import builtins
 import subprocess
@@ -57,8 +58,8 @@ def tmpgraphdir(tmpdir_factory, gitecho):
 
 
 @pytest.fixture(scope="session")
-def documents():
-    return [
+def documents(tmpgraphdir):
+    docs = [
         {
             "path": os.path.join("mypkg", "somechannel", "noarch", "pkg_0.json"),
             "pkg": "mypkg",
@@ -90,3 +91,16 @@ def documents():
             "c": 9,
         },
     ]
+    # write out the docs
+    for doc in docs:
+        art_path = os.path.join(
+            tmpgraphdir,
+            "artifacts",
+            doc["pkg"],
+            doc["channel"],
+            doc["arch"],
+            doc["name"] + ".json",
+        )
+        with open(art_path, "w") as f:
+            json.dump(doc, f)
+    return docs

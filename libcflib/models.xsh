@@ -37,6 +37,13 @@ class Model(object):
             self._load()
         return len(self._d)
 
+    def __eq__(self, other):
+        if not self._loaded:
+            self._load()
+        if isinstance(other, Model) and not other._loaded:
+            other._load()
+        return self._d == other._d
+
     def __getitem__(self, key):
         if not self._loaded:
             self._load()
@@ -117,6 +124,9 @@ class Artifact(Model):
             msg += f"arch={arch!r}, name={name!r}."
             raise ValueError(msg)
         super().__init__()
+
+    def __repr__(self):
+        return f"Artifact(path={self._path!r})"
 
     def _load(self):
         env = builtins.__xonsh__.env
