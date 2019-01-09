@@ -51,10 +51,9 @@ class Search(RequestHandler):
         "query": NON_EMPTY_STR.copy(),
         "page_num": {"type": "integer", "required": False, 'min': 1},
         "page_size": {"type": "integer", "required": False, 'min': 1},
-        }
+    }
 
     def get(self, *args, **kwargs):
         res = {"results": list(self.db.search(**self.data))}
         res.update(self.data)
         self.write(res)
-
