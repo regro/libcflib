@@ -1,6 +1,6 @@
 **Added:**
 
-* <news item>
+* New REST API for searching the database.
 
 **Changed:**
 

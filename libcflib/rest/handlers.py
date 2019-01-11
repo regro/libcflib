@@ -42,3 +42,18 @@ class Package(RequestHandler):
     def get(self, *args, **kwargs):
         """GETs the packages dict"""
         self.write(self.db.packages[self.data("pkg")])
+
+
+class Search(RequestHandler):
+    """Performs a database search"""
+    route = "/search"
+    schema = {
+        "query": NON_EMPTY_STR.copy(),
+        "page_num": {"type": "integer", "required": False, 'min': 1},
+        "page_size": {"type": "integer", "required": False, 'min': 1},
+    }
+
+    def get(self, *args, **kwargs):
+        res = {"results": list(self.db.search(**self.data))}
+        res.update(self.data)
+        self.write(res)
