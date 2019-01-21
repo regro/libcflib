@@ -1,7 +1,8 @@
 """Module for representing entities of the graph"""
+import os
+import re
 import builtins
 from collections import defaultdict
-import os
 from typing import Iterator
 
 from lazyasd import lazyobject
@@ -143,13 +144,28 @@ class Artifact(Model):
         super()._load()
 
 
+@lazyobject
+def int_re():
+    return re.compile(r'(\d+)')
+
+
+def safe_int(s, default=0):
+    """convert a vresion number to an int, safely"""
+    m = int_re.search(s)
+    if m is None:
+        n = default
+    else:
+        n = int(m.group(1))
+    return n
+
+
 def artifact_key(artifact):
     """A function for sorting artifacts"""
     major, _, remain = artifact.version.partition('.')
     minor, _, micro = remain.partition('.')
-    major = int(major)
-    minor = int(minor)
-    micro = int(micro) if micro.isdecimal() else 0
+    major = safe_int(major)
+    minor = safe_int(minor)
+    micro = safe_int(micro)
     return (major, minor, micro, artifact.index['build_number'],
             artifact.index['build'], artifact._path)
 
@@ -237,7 +253,7 @@ class Package(Model):
                 arch = a
                 break
         else:
-            if include_noarch and 'noarch' in self.arches:
+            if not include_noarch or 'noarch' not in self.arches:
                 raise ValueError(f"arches {arches} not available for {self.name}")
         # add arch artifacts
         artifacts = set()
