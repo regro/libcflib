@@ -65,11 +65,18 @@ class Model(object):
         else:
             if not self._loaded:
                 self._load()
-            return self._d[name]
+            if hasattr(self._d, name):
+                return getattr(self._d, name)
+            elif name in self._d:
+                return self._d[name]
+            else:
+                raise AttributeError(f"{self} does not have attribute {name!r}")
 
     def __setattr__(self, name, value):
         if name.startswith("_") or name in self.__dict__:
             self.__dict__[name] = value
+        elif hasattr(self._d, name):
+            setattr(self._d, name, value)
         else:
             self._d[name] = value
 
@@ -136,6 +143,17 @@ class Artifact(Model):
         super()._load()
 
 
+def artifact_key(artifact):
+    """A function for sorting artifacts"""
+    major, _, remain = artifact.version.partition('.')
+    minor, _, micro = remain.partition('.')
+    major = int(major)
+    minor = int(minor)
+    micro = int(micro) if micro.isdecimal() else 0
+    return (major, minor, micro, artifact.index['build_number'],
+            artifact.index['build'], artifact._path)
+
+
 class ChannelGraph(Model):
     """Lazily loaded channel graph model"""
 
@@ -177,12 +195,13 @@ class Package(Model):
         channels = set()
         artifacts = defaultdict(lambda: defaultdict(set))
         for channel, graph in DB.channel_graphs.items():
-            pkg = graph.get(self._name, None)
-            if pkg is None:
+            # the following does not actually work, since graph is always empty
+            #pkg = graph.get(self._name, None)
+            #if pkg is None:
                 # package does not exist on this channel
-                continue
+            #    continue
             # FIXME: This probably needs to do a deep merge, rather than update
-            self._d.update(pkg)
+            #self._d.update(pkg)
             channels.add(channel)
             channel_dir = os.path.join($LIBCFGRAPH_DIR, 'artifacts', self._name, channel)
             with indir(channel_dir):
@@ -196,6 +215,43 @@ class Package(Model):
         self.channels = channels
         self.artifacts = artifacts
         super()._load()
+
+    def latest_artifact(self, channels=('conda-forge',),
+                        arches=('linux-64', 'osx-64', 'win-64'),
+                        include_noarch=True):
+        """Finds the latest artifact, given channel and arch preferences.
+        noarch is included with any arch packages by default.
+        """
+        # find channel
+        channel = None
+        for c in channels:
+            if c in self.channels:
+                channel = c
+                break
+        else:
+            raise ValueError(f"channels {channels} not available for {self.name}")
+        # find arch
+        arch = None
+        for a in arches:
+            if a in self.arches:
+                arch = a
+                break
+        else:
+            if include_noarch and 'noarch' in self.arches:
+                raise ValueError(f"arches {arches} not available for {self.name}")
+        # add arch artifacts
+        artifacts = set()
+        if arch is not None:
+            for art in self.artifacts[channel][arch]:
+                path = os.path.join(self.name, channel, arch, art)
+                artifacts.add(DB.get_artifact(path=path))
+        if include_noarch and 'noarch' in self.arches:
+            for art in self.artifacts[channel]['noarch']:
+                path = os.path.join(self.name, channel, 'noarch', art)
+                artifacts.add(DB.get_artifact(path=path))
+        # sort and return latest
+        artifacts = sorted(artifacts, key=artifact_key, reverse=True)
+        return artifacts[0]
 
 
 class Feedstock(Model):
