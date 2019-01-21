@@ -4,6 +4,25 @@ libcflib Change Log
 
 .. current developments
 
+v0.0.5
+====================
+
+**Added:**
+
+* New ``libcflib.models.artifact_key()`` function for sorting artifacts.
+* New ``libcflib.models.Package.latest_artifact()`` method for finding
+  the most recent artifact for a package.
+
+**Changed:**
+
+* ``ChannelGraph`` now correctly loads artifact names.
+
+**Fixed:**
+
+* Fixed some Model attribute getting/setting for nested models.
+
+
+
 v0.0.4
 ====================
 
