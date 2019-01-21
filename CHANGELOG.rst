@@ -4,6 +4,35 @@ libcflib Change Log
 
 .. current developments
 
+v0.0.4
+====================
+
+**Added:**
+
+* Implemented db.search().
+
+* Schemas contain key telling whoosh if a field should be stored.
+
+* Preloader indexes artifacts.
+
+* Script to index artifacts not currently in index.
+* New REST API for searching the database.
+
+**Changed:**
+
+* When creating a whoosh index, an indexname is supplied so multiple indexes can exist in the same directory.
+
+* When indexing document, ignore fields not present in schema rather than raise an error.
+* Pulling updates to libcfgraph is now more robust, and should not require
+  human intervention ever.
+* New simple search for searching artifacts uses ``grep``, ``head``, and ``tail``.
+
+**Removed:**
+
+* Removed Whoosh, as it is deprecated, so that we may start fresh!
+
+
+
 v0.0.3
 ====================
 
