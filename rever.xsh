@@ -14,7 +14,8 @@ $ACTIVITIES = [
     'conda_forge',
     'docker_build',
     'docker_push',
-    'deploy_to_gcloud',
+    # temporairly disable deploying to gcloud
+    #'deploy_to_gcloud',
 ]
 
 $VERSION_BUMP_PATTERNS = [
@@ -94,4 +95,4 @@ def _ensure_packages():
         raise RuntimeError(s)
 
 
-_ensure_packages()
+#_ensure_packages()
