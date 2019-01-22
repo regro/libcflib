@@ -1,5 +1,4 @@
 """Update the top level graph"""
-import json
 import os
 
 try:
@@ -9,6 +8,7 @@ except ImportError:
 import networkx as nx
 
 from libcflib.tools import indir
+from libcflib import jsonutils as json
 
 
 def create_graphs():
@@ -22,7 +22,9 @@ def create_graphs():
             with open(art_fp, 'r') as f:
                 art = json.load(f)
                 req = set()
-                for sec, deps in art['rendered_recipe']['requirements'].items():
+                for sec, deps in art['rendered_recipe'].get('requirements', {}).items():
+                    if deps is None:
+                        continue
                     for dep in deps:
                         req.add(dep.split(' ')[0])
             if pkg not in channel_graphs[channel]:
@@ -43,6 +45,10 @@ def create_graphs():
 
 
 def update_graphs():
-    for k, v in create_graphs():
-        with open(k+'.json', 'w') as f:
+    for k, v in create_graphs().items():
+        with indir($LIBCFGRAPH_DIR), open(k+'.json', 'w') as f:
             json.dump(nx.node_link_data(v), f)
+
+
+if __name__ == "__main__":
+    update_graphs()
