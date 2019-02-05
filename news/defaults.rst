@@ -1,6 +1,7 @@
 **Added:**
 
-* ``rest.RequestHandlers`` may now provide a ``default`` dict.
+* ``rest.RequestHandlers`` may now provide a ``defaults`` dict.
+* ``rest.RequestHandlers`` may now provide a ``converters`` dict.
 
 **Changed:**
 

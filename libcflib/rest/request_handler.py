@@ -47,6 +47,13 @@ class RequestHandler(tornado.web.RequestHandler):
             # tornado returns values as list. Take the last entry
             # to conform to the JSON schema. Also, need to decode the values
             data.update({k: v[-1].decode() for k, v in self.request.arguments.items()})
+        # convert, if needed, because we only get strings from GETs
+        converters = getattr(self, "converters", None)
+        if converters is not None:
+            for field, converter in converters.items():
+                if field in data:
+                    data[field] = converter(data[field])
+        # validate
         if not self.validator.validate(data):
             msg = "Input to " + self.__class__.__name__ + " is not valid: "
             msg += str(self.validator.errors)

@@ -56,6 +56,10 @@ class Search(RequestHandler):
         "page_num": 1,
         "page_size": 10,
     }
+    converters = {
+        "page_num": int,
+        "page_size": int,
+    }
 
     def get(self, *args, **kwargs):
         res = {"results": list(self.db.search(**self.data))}
