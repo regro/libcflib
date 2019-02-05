@@ -36,16 +36,17 @@ class RequestHandler(tornado.web.RequestHandler):
     def prepare(self):
         self.response = {}
         body = self.request.body
+        data = self.defaults.copy() if hasattr(self, 'defaults') else {}
         if body:
             try:
-                data = json.decode(body)
+                data.update(json.decode(body))
             except ValueError:
                 self.send_error(400, message="Unable to parse JSON.")
                 return
         else:
             # tornado returns values as list. Take the last entry
             # to conform to the JSON schema. Also, need to decode the values
-            data = {k: v[-1].decode() for k, v in self.request.arguments.items()}
+            data.update({k: v[-1].decode() for k, v in self.request.arguments.items()})
         if not self.validator.validate(data):
             msg = "Input to " + self.__class__.__name__ + " is not valid: "
             msg += str(self.validator.errors)
