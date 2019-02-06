@@ -4,6 +4,31 @@ libcflib Change Log
 
 .. current developments
 
+v0.0.6
+====================
+
+**Added:**
+
+* ``rest.RequestHandlers`` may now provide a ``defaults`` dict.
+* ``rest.RequestHandlers`` may now provide a ``converters`` dict.
+* The REST service will now update the graph periodically.
+
+**Changed:**
+
+* The ``Artifact`` model now includes a ``spec`` field that contains
+  information about the artifact itself.
+
+**Fixed:**
+
+* Fixes to ``harvest_pkgs`` utility.
+
+**Authors:**
+
+* Anthony Scopatz
+* Christopher J. Wright
+
+
+
 v0.0.5
 ====================
 
