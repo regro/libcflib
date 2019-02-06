@@ -11,7 +11,7 @@ def test_artifact(tmpgraphdir):
     with open(os.path.join(art_dir, "mypkg.json"), "w") as f:
         json.dump(d, f)
 
-    env = builtins.__xonsh_env__
+    env = builtins.__xonsh__.env
     env["LIBCFGRAPH_DIR"] = tmpgraphdir
     pkg, channel, arch = art_dir.split("/")[-3:]
     n = Artifact(pkg=pkg, channel=channel, arch=arch, name="mypkg")

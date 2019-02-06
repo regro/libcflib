@@ -1,5 +1,7 @@
 """Main function for libcflib REST API server."""
+import time
 import argparse
+from threading import Thread
 
 import tornado.web
 import tornado.ioloop
@@ -30,7 +32,31 @@ def make_parser():
         action="store_false",
         help="turns off database initialization",
     )
+    p.add_argument(
+        "--graph-update-freq",
+        default=3600,
+        dest="graph_update_freq",
+        type=int,
+        help="how frequently to update the graph, in sec.",
+    )
     return p
+
+
+class DbUpdater(Thread):
+    """Updates the database every so often."""
+
+    def __init__(self, db, freq=3600):
+        super().__init__()
+        self.db = db
+        self.freq = freq
+        self.keep_running = True
+        self.daemon = True
+        self.start()
+
+    def run(self):
+        while self.keep_running:
+            time.sleep(self.freq)
+            self.db.update_graph()
 
 
 def run_application(ns):
@@ -46,7 +72,10 @@ def run_application(ns):
             handlers.append((var.route, var))
     # init the database
     if ns.init_db:
-        DB()
+        db = DB()
+        dbupdater = DbUpdater(db, freq=ns.graph_update_freq)
+    else:
+        dbupdater = None
     # construct the app
     app = tornado.web.Application(handlers)
     app.listen(ns.port)
@@ -57,6 +86,8 @@ def run_application(ns):
         tornado.ioloop.IOLoop.current().start()
     except KeyboardInterrupt:
         print()
+    if dbupdater is not None:
+        dbupdater.keep_running = False
     LOGGER.log("stopping libcflib-rest " + url, category="rets-server", data=data)
 
 
