@@ -95,4 +95,4 @@ def _ensure_packages():
         raise RuntimeError(s)
 
 
-#_ensure_packages()
+_ensure_packages()
