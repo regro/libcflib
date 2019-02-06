@@ -18,7 +18,15 @@ def test_artifact(tmpgraphdir):
     assert n.a == "hi"
     assert n["a"] == "hi"
     # test asdict
-    assert d == n.asdict()
+    exp = d.copy()
+    exp["spec"] = {
+        "arch": "noarch",
+        "channel": "somechannel",
+        "name": "mypkg.json",
+        "path": "mypkg/somechannel/noarch/mypkg.json",
+        "pkg": "mypkg",
+    }
+    assert exp == n.asdict()
     # make sure we can hash artifacts
     hash(n)
 

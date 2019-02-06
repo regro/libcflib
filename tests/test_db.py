@@ -20,13 +20,13 @@ def test_search_simple(db_fixture, documents):
 
 def test_search_pagesize(db_fixture, documents):
     obs = set(db_fixture.search("noarch", page_size=1))
-    exp = {db_fixture.get_artifact(path=documents[1]["path"])}
+    exp = {db_fixture.get_artifact(path=documents[0]["path"])}
     assert len(obs) == 1
     assert obs == exp
 
 
 def test_search_pagenum(db_fixture, documents):
     obs = set(db_fixture.search("noarch", page_size=1, page_num=2))
-    exp = {db_fixture.get_artifact(path=documents[0]["path"])}
+    exp = {db_fixture.get_artifact(path=documents[1]["path"])}
     assert len(obs) == 1
     assert obs == exp

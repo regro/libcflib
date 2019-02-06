@@ -21,7 +21,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            pytest
+            pytest -v
             flake8
 
 workflows:

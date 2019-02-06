@@ -100,6 +100,8 @@ class Artifact(Model):
     must be given.
     """
 
+    spec_names = ('pkg', 'channel', 'arch', 'name')
+
     def __init__(self, *, pkg=None, channel=None, arch=None, name=None, path=None):
         """
         Parameters
@@ -142,6 +144,9 @@ class Artifact(Model):
         with open(filename, "r") as f:
             self._d.update(load_json_file(f))
         super()._load()
+        spec = dict(zip(self.spec_names, self._path.split(os.sep)))
+        spec["path"] = self._path
+        self._d["spec"] = spec
 
 
 @lazyobject
