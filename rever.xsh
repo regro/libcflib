@@ -1,5 +1,7 @@
 import os
 
+from xonsh.tools import print_color
+
 from rever.activity import activity
 
 
