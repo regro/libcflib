@@ -1,6 +1,6 @@
 **Added:**
 
-* The REST service will now update the grpah periodically.
+* The REST service will now update the graph periodically.
 
 **Changed:**
 
