@@ -1,0 +1,29 @@
+- name: Anthony Scopatz
+  email: scopatz@gmail.com
+  num_commits: 93
+  first_commit: 2018-06-18 11:12:16
+- name: Marius van Niekerk
+  email: marius.v.niekerk@gmail.com
+  alternate_emails:
+  - marius.vanniekerk@maxpoint.com
+  github: mariusvniekerk
+  num_commits: 23
+  first_commit: 2018-06-18 12:41:40
+- name: Christopher J. Wright
+  email: cjwright4242gh@gmail.com
+  num_commits: 1
+  first_commit: 2018-06-18 15:16:38
+- name: Justin Calamari
+  email: justin.calamari@gmail.com
+  github: justcalamari
+  num_commits: 62
+  first_commit: 2018-06-18 22:53:45
+- name: christopher
+  email: cjwright4242@gmail.com
+  num_commits: 25
+  first_commit: 2018-06-18 11:35:53
+- name: Dougal J. Sutherland
+  email: dougal@gmail.com
+  github: dougalsutherland
+  num_commits: 3
+  first_commit: 2018-06-20 13:28:24

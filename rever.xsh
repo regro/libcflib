@@ -5,6 +5,7 @@ from rever.activity import activity
 
 $PROJECT = $GITHUB_REPO = 'libcflib'
 $ACTIVITIES = [
+    'authors',
     'version_bump',
     'changelog',
     'tag',
@@ -14,13 +15,12 @@ $ACTIVITIES = [
     'conda_forge',
     'docker_build',
     'docker_push',
-    # temporairly disable deploying to gcloud
-    #'deploy_to_gcloud',
+    'deploy_to_gcloud',
 ]
 
 $VERSION_BUMP_PATTERNS = [
-    ($PROJECT+'/__init__.py', '__version__\s*=.*', "__version__ = '$VERSION'"),
-    ('setup.py', 'VERSION\s*=.*', "VERSION = '$VERSION'")
+    ($PROJECT+'/__init__.py', r'__version__\s*=.*', "__version__ = '$VERSION'"),
+    ('setup.py', r'VERSION\s*=.*', "VERSION = '$VERSION'")
     ]
 $CHANGELOG_FILENAME = 'CHANGELOG.rst'
 $CHANGELOG_TEMPLATE = 'TEMPLATE.rst'
