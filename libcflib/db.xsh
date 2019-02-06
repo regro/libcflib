@@ -35,13 +35,7 @@ class DB:
         # All rights reserved.
         if self._initialized:
             return
-        if os.path.exists($LIBCFGRAPH_DIR):
-            LOGGER.log('pulling latest graph', category="db")
-            with indir($LIBCFGRAPH_DIR):
-                git pull $LIBCFGRAPH_URL master -s recursive -X theirs --no-edit
-        else:
-            LOGGER.log('grabbing initial graph', category="db")
-            git clone --quiet $LIBCFGRAPH_URL $LIBCFGRAPH_DIR
+        self.update_graph()
         self.cache = {}
         cache_size = $LIBCFLIB_DB_CACHE_SIZE if cache_size is None else cache_size
         self.lru = zict.LRU(cache_size, self.cache)
@@ -50,6 +44,16 @@ class DB:
         self._packages = {}
         self._initialized = True
         self._idx = $LIBCFGRAPH_INDEX
+
+    def update_graph(self):
+        """Updates the database graph."""
+        if os.path.exists($LIBCFGRAPH_DIR):
+            LOGGER.log('pulling latest graph', category="db")
+            with indir($LIBCFGRAPH_DIR):
+                git pull $LIBCFGRAPH_URL master -s recursive -X theirs --no-edit
+        else:
+            LOGGER.log('grabbing initial graph', category="db")
+            git clone --quiet $LIBCFGRAPH_URL $LIBCFGRAPH_DIR
 
     def search(self, query, *, page_num=1, page_size=10):
         """Search the database
