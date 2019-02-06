@@ -76,7 +76,7 @@ def deploy_to_gcloud():
     ![gcloud container clusters get-credentials --account @(account) \
       --zone=$GCLOUD_ZONE --project=$GCLOUD_PROJECT_ID $GCLOUD_CLUSTER]
     # set new image
-    ![kubectl set image deployment/libcflib-app libcflib-app=condaforge/libcflib:$VERSION]
+    ![kubectl set image deployment/libcflib-app libcflib-app=docker.io/condaforge/libcflib:$VERSION]
 
 
 # Ensure that we have the proper software to perform release
