@@ -23,7 +23,7 @@ def test_artifact(tmpgraphdir):
         "arch": "noarch",
         "channel": "somechannel",
         "name": "mypkg.json",
-        "path": "mypkg/somechannel/noarch/mypkg.json",
+        "path": "mypkg/somechannel/noarch/mypkg",
         "pkg": "mypkg",
     }
     assert exp == n.asdict()
