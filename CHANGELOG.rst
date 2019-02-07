@@ -4,6 +4,20 @@ libcflib Change Log
 
 .. current developments
 
+v0.0.7
+====================
+
+**Fixed:**
+
+* Fixes to the name argument of the Artifact model, so that it respects a
+  canonical form better.
+
+**Authors:**
+
+* Anthony Scopatz
+
+
+
 v0.0.6
 ====================
 
