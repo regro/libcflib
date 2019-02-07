@@ -22,8 +22,8 @@ def test_artifact(tmpgraphdir):
     exp["spec"] = {
         "arch": "noarch",
         "channel": "somechannel",
-        "name": "mypkg.json",
-        "path": "mypkg/somechannel/noarch/mypkg",
+        "name": "mypkg",
+        "path": "mypkg/somechannel/noarch/mypkg.json",
         "pkg": "mypkg",
     }
     assert exp == n.asdict()
