@@ -127,6 +127,8 @@ class Artifact(Model):
         ):
             if name.endswith(".tar.bz2"):
                 name = name[:-8]
+            elif name.endswith(".json"):
+                name = name[:-5]
             self._path = os.path.join(pkg, channel, arch, name + ".json")
         else:
             msg = "Artifact path or pkg, channel, arch and name must be given. "
@@ -144,7 +146,8 @@ class Artifact(Model):
         with open(filename, "r") as f:
             self._d.update(load_json_file(f))
         super()._load()
-        spec = dict(zip(self.spec_names, self._path.split(os.sep)))
+        nojson = self._path[:-5]
+        spec = dict(zip(self.spec_names, nojson.split(os.sep)))
         spec["path"] = self._path
         self._d["spec"] = spec
 
