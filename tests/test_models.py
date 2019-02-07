@@ -22,7 +22,7 @@ def test_artifact(tmpgraphdir):
     exp["spec"] = {
         "arch": "noarch",
         "channel": "somechannel",
-        "name": "mypkg.json",
+        "name": "mypkg",
         "path": "mypkg/somechannel/noarch/mypkg.json",
         "pkg": "mypkg",
     }
