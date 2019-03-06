@@ -1,4 +1,5 @@
 """REST Specification request handlers."""
+from libcflib import __version__ as VERSION
 from libcflib.rest.request_handler import RequestHandler
 
 
@@ -65,3 +66,14 @@ class Search(RequestHandler):
         res = {"results": list(self.db.search(**self.data))}
         res.update(self.data)
         self.write(res)
+
+
+class Version(RequestHandler):
+    """Gets the version of libcflib"""
+
+    route = "/version"
+    schema = {}
+
+    def get(self, *args, **kwargs):
+        """GETs the libcflib version"""
+        self.write({"version": VERSION})
