@@ -4,6 +4,15 @@ libcflib Change Log
 
 .. current developments
 
+v0.0.8
+====================
+
+**Authors:**
+
+* Anthony Scopatz
+
+
+
 v0.0.7
 ====================
 
