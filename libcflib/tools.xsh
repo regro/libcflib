@@ -81,7 +81,7 @@ def render_meta_yaml(text):
     return content
 
 
-def parse_meta_yaml(text):
+def parse_meta_yaml(text, arch=None):
     """Parse the meta.yaml.
 
     Parameters
@@ -96,9 +96,12 @@ def parse_meta_yaml(text):
 
     """
 
+    config = Config()
+    if arch:
+        config.host_subdir = arch
     try:
         content = render_meta_yaml(text)
-        return parse(content, Config())
+        return parse(content, config)
     except:
         return {}
 
