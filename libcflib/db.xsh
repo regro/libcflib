@@ -35,13 +35,7 @@ class DB:
         # All rights reserved.
         if self._initialized:
             return
-        if os.path.exists($LIBCFGRAPH_DIR):
-            LOGGER.log('pulling latest graph', category="db")
-            with indir($LIBCFGRAPH_DIR):
-                git pull $LIBCFGRAPH_URL master -s recursive -X theirs --no-edit
-        else:
-            LOGGER.log('grabbing initial graph', category="db")
-            git clone --quiet $LIBCFGRAPH_URL $LIBCFGRAPH_DIR
+        self.update_graph()
         self.cache = {}
         cache_size = $LIBCFLIB_DB_CACHE_SIZE if cache_size is None else cache_size
         self.lru = zict.LRU(cache_size, self.cache)
@@ -51,20 +45,40 @@ class DB:
         self._initialized = True
         self._idx = $LIBCFGRAPH_INDEX
 
-    def search(self, query):
+    def update_graph(self):
+        """Updates the database graph."""
+        if os.path.exists($LIBCFGRAPH_DIR):
+            LOGGER.log('pulling latest graph', category="db")
+            with indir($LIBCFGRAPH_DIR):
+                git pull $LIBCFGRAPH_URL master -s recursive -X theirs --no-edit
+        else:
+            LOGGER.log('grabbing initial graph', category="db")
+            git clone --quiet $LIBCFGRAPH_URL $LIBCFGRAPH_DIR
+
+    def search(self, query, *, page_num=1, page_size=10):
         """Search the database
 
         Parameters
         ----------
-        query : dict
-            The keys to search on. e.g. `{"about.conda_version": "4.2.13"}`
+        query : str
+            The query string to search the artifacts for.
+        page_num : int
+            Which page number to return.
+        page_size : int
+            How many results per page
 
         Yields
         -------
-        res :
+        res : Artifact
             The loaded artifact search results
         """
-        raise NotImplementedError("search not yet implemented")
+        artifactsdir = $LIBCFGRAPH_DIR + '/artifacts/'
+        n_artifactsdir = len(artifactsdir)
+        grep_args = ['-r', '--files-with-matches', query, artifactsdir]
+        for line in !(grep @(grep_args) | head -n @(page_num * page_size) | tail -n @(page_size)):
+            path = line[n_artifactsdir:-1]
+            artifact = self.get_artifact(path=path)
+            yield artifact
 
     def load_channel_graphs(self):
         """Loads channel data for known channels"""

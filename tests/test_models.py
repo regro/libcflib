@@ -11,14 +11,22 @@ def test_artifact(tmpgraphdir):
     with open(os.path.join(art_dir, "mypkg.json"), "w") as f:
         json.dump(d, f)
 
-    env = builtins.__xonsh_env__
+    env = builtins.__xonsh__.env
     env["LIBCFGRAPH_DIR"] = tmpgraphdir
     pkg, channel, arch = art_dir.split("/")[-3:]
     n = Artifact(pkg=pkg, channel=channel, arch=arch, name="mypkg")
     assert n.a == "hi"
     assert n["a"] == "hi"
     # test asdict
-    assert d == n.asdict()
+    exp = d.copy()
+    exp["spec"] = {
+        "arch": "noarch",
+        "channel": "somechannel",
+        "name": "mypkg",
+        "path": "mypkg/somechannel/noarch/mypkg.json",
+        "pkg": "mypkg",
+    }
+    assert exp == n.asdict()
     # make sure we can hash artifacts
     hash(n)
 

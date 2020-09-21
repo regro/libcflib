@@ -4,7 +4,7 @@ import os
 from setuptools import setup
 
 
-VERSION = "0.0.3"
+VERSION = '0.0.8'
 
 install_file = os.path.join(os.path.dirname(__file__), "requirements", "run.txt")
 with open(install_file) as f:

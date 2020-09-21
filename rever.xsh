@@ -1,10 +1,13 @@
 import os
 
+from xonsh.tools import print_color
+
 from rever.activity import activity
 
 
 $PROJECT = $GITHUB_REPO = 'libcflib'
 $ACTIVITIES = [
+    'authors',
     'version_bump',
     'changelog',
     'tag',
@@ -18,8 +21,8 @@ $ACTIVITIES = [
 ]
 
 $VERSION_BUMP_PATTERNS = [
-    ($PROJECT+'/__init__.py', '__version__\s*=.*', "__version__ = '$VERSION'"),
-    ('setup.py', 'VERSION\s*=.*', "VERSION = '$VERSION'")
+    ($PROJECT+'/__init__.py', r'__version__\s*=.*', "__version__ = '$VERSION'"),
+    ('setup.py', r'VERSION\s*=.*', "VERSION = '$VERSION'")
     ]
 $CHANGELOG_FILENAME = 'CHANGELOG.rst'
 $CHANGELOG_TEMPLATE = 'TEMPLATE.rst'
@@ -73,7 +76,7 @@ def deploy_to_gcloud():
     ![gcloud container clusters get-credentials --account @(account) \
       --zone=$GCLOUD_ZONE --project=$GCLOUD_PROJECT_ID $GCLOUD_CLUSTER]
     # set new image
-    ![kubectl set image deployment/libcflib-app libcflib-app=condaforge/libcflib:$VERSION]
+    ![kubectl set image deployment/libcflib-app libcflib-app=docker.io/condaforge/libcflib:$VERSION]
 
 
 # Ensure that we have the proper software to perform release
