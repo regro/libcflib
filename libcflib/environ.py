@@ -101,7 +101,7 @@ ENVVARS = OrderedDict(
             "LIBCFLIB_LOGFILE",
             (
                 libcflib_logfile,
-                always_false,
+                is_string,
                 expand_file_and_mkdirs,
                 ensure_string,
                 "Path to the libcflib logfile.",
