@@ -5,7 +5,7 @@ from collections import OrderedDict
 from contextlib import contextmanager
 from collections.abc import MutableMapping
 
-from xonsh.environ import Ensurer, VarDocs
+from xonsh.environ import default_value
 from xonsh.tools import always_false, ensure_string, is_string, is_int
 
 from libcflib.tools import expand_file_and_mkdirs
@@ -157,9 +157,14 @@ def setup():
     for key, (default, validate, convert, detype, docstr) in ENVVARS.items():
         if key in env:
             updates[key] = env.pop(key)
-        env._defaults[key] = default() if callable(default) else default
-        env._ensurers[key] = Ensurer(validate=validate, convert=convert, detype=detype)
-        env._docs[key] = VarDocs(docstr=docstr)
+        env.register(
+            name=key,
+            default=default,
+            validate=validate,
+            convert=convert,
+            detype=detype,
+            doc=docstr
+        )
     env.update(updates)
     _ENV_SETUP = True
 
@@ -170,9 +175,7 @@ def teardown():
         return
     env = builtins.__xonsh__.env
     for key in ENVVARS:
-        env._defaults.pop(key)
-        env._ensurers.pop(key)
-        env._docs.pop(key)
+        env.deregister(key)
         if key in env:
             del env[key]
     _ENV_SETUP = False
