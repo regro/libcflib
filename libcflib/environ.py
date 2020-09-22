@@ -157,6 +157,8 @@ def setup():
     for key, (default, validate, convert, detype, docstr) in ENVVARS.items():
         if key in env:
             updates[key] = env.pop(key)
+        if callable(default):
+            default = default()
         env.register(
             name=key,
             default=default,
