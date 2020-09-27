@@ -5,8 +5,7 @@ from collections import OrderedDict
 from contextlib import contextmanager
 from collections.abc import MutableMapping
 
-from xonsh.environ import default_value
-from xonsh.tools import always_false, ensure_string, is_string, is_int
+from xonsh.tools import ensure_string, is_string, is_int
 
 from libcflib.tools import expand_file_and_mkdirs
 
