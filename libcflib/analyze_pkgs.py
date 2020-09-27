@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
     try:
         with open(".indexed_files", "r") as f:
-            indexed_files = f.readlines()
+            indexed_files = {ff.strip() for ff in f.readlines()}
     except FileNotFoundError:
         indexed_files = []
     new_files = []
@@ -63,4 +63,5 @@ if __name__ == "__main__":
     with open("import_map.json", "w") as f:
         dump(import_map, f, indent=2)
     with open(".indexed_files", "a") as f:
-        f.writelines(new_files)
+        for file in new_files:
+            f.write(f"{file}\n")
