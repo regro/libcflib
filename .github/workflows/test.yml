@@ -1,0 +1,34 @@
+name: test
+
+on:
+  push
+
+jobs:
+  test:
+    name: test
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: goanpeca/setup-miniconda@v1
+        with:
+          python-version: 3.7
+          channels: conda-forge,defaults
+          channel-priority: strict
+          show-channel-urls: true
+
+      - name: config conda and install
+        shell: bash -l {0}
+        run: |
+          conda config --set always_yes True
+          conda install --file requirements/run.txt --file requirements/tests.txt
+          python setup.py install
+
+      - name: lint
+        shell: bash -l {0}
+        run: |
+          flake8
+
+      - name: run tests
+        shell: bash -l {0}
+        run: |
+          pytest -v
