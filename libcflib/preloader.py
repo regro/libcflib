@@ -125,7 +125,7 @@ def reap_package(root_path, package, dst_path, src_url, progress_callback=None):
 def reap(path, known_bad_packages=()):
     sorted_files = list(diff(path))
     print(f"TOTAL OUTSTANDING ARTIFACTS: {len(sorted_files)}")
-    sorted_files = sorted_files[:100]
+    sorted_files = sorted_files[:500]
     progress = tqdm.tqdm(total=len(sorted_files))
 
     with ThreadPoolExecutor(max_workers=20) as pool:
