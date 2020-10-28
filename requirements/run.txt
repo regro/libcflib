@@ -8,3 +8,4 @@ jinja2
 lazyasd
 pandas
 networkx
+requests
