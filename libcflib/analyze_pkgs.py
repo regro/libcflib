@@ -19,31 +19,42 @@ CLOBBER_EXCEPTIONS = {
 
 
 def file_path_to_import(file_path: str):
+    file_path = file_path.split("site-packages/")[-1].split(".egg/")[-1]
+    if '.so' in file_path:
+        if 'python' not in file_path and 'pypy' not in file_path:
+            return
+        file_path = file_path.split('.', 1)[0]
+    elif '.pyd' in file_path:
+        file_path = file_path.split('.', 1)[0]
     return (
         file_path.replace("/__init__.py", "")
         .replace("/__main__.py", "")
         .replace(".py", "")
+        .replace('.pyd', '')
         .replace("/", ".")
     )
 
 
-def clobber_suspicion(imports, pkg_name):
-    return any([not f.startswith(pkg_name) for f in imports])
+def extract_importable_files(file_list):
+    output_list = []
+    for file in file_list:
+        if 'site-packages/' in file:
+            if file.rsplit('/', 1)[0]+"/__init__.py" in file_list:
+                output_list.append(file)
+    return output_list
 
 
 def get_imports(file):
     with open(file) as f:
         data = json.load(f)
-    pkg_files: List[str] = [
-        file.split("site-packages/")[-1].split(".egg/")[-1]
-        for file in data.get("files", [])
-        if "site-packages/" in file
-    ]
+
+    pkg_files: List[str] = extract_importable_files(data.get("files", []))
+    # TODO: handle top level things that are stand alone .py files
     return {
         file_path_to_import(pkg_file)
         for pkg_file in pkg_files
-        if pkg_file.endswith(".py")
-    }
+        if any(pkg_file.endswith(k) for k in ['.py', '.pyd', '.so'])
+    } - {None}
 
 
 def write_sharded_dict(import_map):
@@ -97,7 +108,7 @@ if __name__ == "__main__":
         for impt in future.result():
             pkg_name = futures[future].rsplit('-', 2)[0]
             if not impt.startswith(pkg_name) and pkg_name not in CLOBBER_EXCEPTIONS:
-                clobbers.add(pkg_name)
+                clobbers.add(futures[future])
             import_map[impt].add(f)
     os.makedirs("import_maps", exist_ok=True)
     sorted_imports = sorted(import_map.keys(), key=lambda x: x.lower())
