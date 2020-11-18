@@ -11,6 +11,12 @@ from libcflib.jsonutils import dump, load
 from concurrent.futures import as_completed, ThreadPoolExecutor
 from itertools import groupby
 
+CLOBBER_EXCEPTIONS = {
+    'matplotlib',
+    'matplotlib-base',
+    'mongo',
+}
+
 
 def file_path_to_import(file_path: str):
     return (
@@ -90,7 +96,7 @@ if __name__ == "__main__":
         f = futures.pop(future)
         for impt in future.result():
             pkg_name = futures[future].rsplit('-', 2)[0]
-            if not impt.startswith(pkg_name):
+            if not impt.startswith(pkg_name) and pkg_name not in CLOBBER_EXCEPTIONS:
                 clobbers.add(pkg_name)
             import_map[impt].add(f)
     os.makedirs("import_maps", exist_ok=True)
