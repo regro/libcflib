@@ -21,6 +21,10 @@ def file_path_to_import(file_path: str):
     )
 
 
+def clobber_suspicion(imports, pkg_name):
+    return any([not f.startswith(pkg_name) for f in imports])
+
+
 def get_imports(file):
     with open(file) as f:
         data = json.load(f)
@@ -70,6 +74,11 @@ if __name__ == "__main__":
             indexed_files = {ff.strip() for ff in f.readlines()}
     except FileNotFoundError:
         indexed_files = set()
+    try:
+        with open('clobbers.json', 'r') as f:
+            clobbers = {ff.strip() for ff in f.readlines()}
+    except FileNotFoundError:
+        clobbers = set()
     futures = {}
     tpe = ThreadPoolExecutor()
     all_files = set(glob.glob("artifacts/**/*.json", recursive=True))
@@ -80,6 +89,9 @@ if __name__ == "__main__":
     for future in tqdm(as_completed(futures), total=len(futures)):
         f = futures.pop(future)
         for impt in future.result():
+            pkg_name = futures[future].rsplit('-', 2)[0]
+            if not impt.startswith(pkg_name):
+                clobbers.add(pkg_name)
             import_map[impt].add(f)
     os.makedirs("import_maps", exist_ok=True)
     sorted_imports = sorted(import_map.keys(), key=lambda x: x.lower())
@@ -90,3 +102,5 @@ if __name__ == "__main__":
     with open(".indexed_files", "a") as f:
         for file in new_files:
             f.write(f"{file}\n")
+    with open('clobbers.json', 'w') as f:
+        dump(clobbers, f)
