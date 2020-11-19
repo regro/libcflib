@@ -21,6 +21,17 @@ def file_path_to_import(file_path: str):
     )
 
 
+def extract_importable_files(file_list):
+    output_list = []
+    for file in file_list:
+        if 'site-packages/' in file:
+            if file.rsplit('/', 1)[0]+"/__init__.py" in file_list:
+                output_list.append(file)
+            elif file.endswith('.so') or file.endswith('.pyd'):
+                output_list.append(file)
+    return output_list
+
+
 def get_imports(file):
     with open(file) as f:
         data = json.load(f)
