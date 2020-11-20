@@ -60,7 +60,7 @@ FILE_IMPORT = [
     ('lib/python3.7/site-packages/foo.py', 'foo'),
     ('Lib/site-packages/dipy/align/bundlemin.cp38-win_amd64.pyd', 'dipy.align.bundlemin'),
     ('lib/python3.6/site-packages/numpy/linalg/lapack_lite.pypy36-pp73-x86_64-linux-gnu.so', 'numpy.linalg.lapack_lite'),
-    ('lib/python3.9/site-packages/zstd.cpython-39-x86_64-linux-gnu.so', 'zstd')
+    ('lib/python3.9/site-packages/zstd.cpython-39-x86_64-linux-gnu.so', 'zstd'),
 ]
 
 

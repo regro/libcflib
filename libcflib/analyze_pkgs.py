@@ -13,10 +13,18 @@ from itertools import groupby
 
 
 def file_path_to_import(file_path: str):
+    file_path = file_path.split("site-packages/")[-1].split(".egg/")[-1]
+    if '.so' in file_path:
+        if 'python' not in file_path and 'pypy' not in file_path:
+            return
+        file_path = file_path.split('.', 1)[0]
+    elif '.pyd' in file_path:
+        file_path = file_path.split('.', 1)[0]
     return (
         file_path.replace("/__init__.py", "")
         .replace("/__main__.py", "")
         .replace(".py", "")
+        .replace('.pyd', '')
         .replace("/", ".")
     )
 
@@ -35,16 +43,14 @@ def extract_importable_files(file_list):
 def get_imports(file):
     with open(file) as f:
         data = json.load(f)
-    pkg_files: List[str] = [
-        file.split("site-packages/")[-1].split(".egg/")[-1]
-        for file in data.get("files", [])
-        if "site-packages/" in file
-    ]
+
+    pkg_files: List[str] = extract_importable_files(data.get("files", []))
+    # TODO: handle top level things that are stand alone .py files
     return {
         file_path_to_import(pkg_file)
         for pkg_file in pkg_files
-        if pkg_file.endswith(".py")
-    }
+        if any(pkg_file.endswith(k) for k in ['.py', '.pyd', '.so'])
+    } - {None}
 
 
 def write_sharded_dict(import_map):
