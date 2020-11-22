@@ -95,7 +95,6 @@ if __name__ == "__main__":
         indexed_files = set()
 
     clobbers = set()
-    clobber_maps = defaultdict(lambda: defaultdict(set))
 
     futures = {}
     tpe = ThreadPoolExecutor()
@@ -109,23 +108,22 @@ if __name__ == "__main__":
         artifact_name = Path(file).name.rsplit(".", 1)[0]
         parts = file.split("/")
         pkg = parts[1]
-        platform = parts[3]
+        # platform = parts[3]
 
         imports, files = future.result()
         for impt in imports:
-            pkg_name = futures[future].rsplit('-', 2)[0]
-            if all(not impt.startswith(name) for name in [pkg_name, pkg_name.replace('-', '_')]) and pkg_name not in CLOBBER_EXCEPTIONS:
-                clobbers.add(futures[future])
-            import_map[impt].add(f)
+            if all(not impt.startswith(name) for name in [pkg, pkg.replace('-', '_')]) and pkg not in CLOBBER_EXCEPTIONS:
+                clobbers.add(pkg)
+            import_map[impt].add(artifact_name)
 
-        if platform == "noarch":
-            for f in files:
-                clobber_maps[platform][f].add(pkg)
-                for _platform in ["linux-64", "osx-64", "win-64", "linux-aarch64", "linux-ppc64le", "osx-arm64"]:
-                    clobber_maps[_platform][f].add(pkg)
-        else:
-            for f in files:
-                clobber_maps[platform][f].add(pkg)
+        # if platform == "noarch":
+        #     for f in files:
+        #         clobber_maps[platform][f].add(pkg)
+        #         for _platform in ["linux-64", "osx-64", "win-64", "linux-aarch64", "linux-ppc64le", "osx-arm64"]:
+        #             clobber_maps[_platform][f].add(pkg)
+        # else:
+        #     for f in files:
+        #         clobber_maps[platform][f].add(pkg)
 
     os.makedirs("import_maps", exist_ok=True)
     sorted_imports = sorted(import_map.keys(), key=lambda x: x.lower())
@@ -148,15 +146,15 @@ if __name__ == "__main__":
     with open('clobbering_pkgs.json', 'w') as f:
         dump(_clobbers, f)
 
-    try:
-        with open('file_map.json', 'r') as f:
-            _clobber_maps: dict = load(f)
-    except FileNotFoundError:
-        _clobber_maps = dict()
-    for platform, values in clobber_maps.items():
-        z = _clobber_maps.setdefault(platform, {})
-        for filename, pkgs in values.items():
-            zz = z.setdefault(filename, set())
-            zz.update(pkgs)
-    with open('file_map.json', 'w') as f:
-        dump(clobber_maps, f)
+    # try:
+    #     with open('file_map.json', 'r') as f:
+    #         _clobber_maps: dict = load(f)
+    # except FileNotFoundError:
+    #     _clobber_maps = dict()
+    # for platform, values in clobber_maps.items():
+    #     z = _clobber_maps.setdefault(platform, {})
+    #     for filename, pkgs in values.items():
+    #         zz = z.setdefault(filename, set())
+    #         zz.update(pkgs)
+    # with open('file_map.json', 'w') as f:
+    #     dump(clobber_maps, f)
