@@ -13,25 +13,25 @@ from concurrent.futures import as_completed, ThreadPoolExecutor
 from itertools import groupby
 
 CLOBBER_EXCEPTIONS = {
-    'matplotlib',
-    'matplotlib-base',
-    'mongo',
+    "matplotlib",
+    "matplotlib-base",
+    "mongo",
 }
 
 
 def file_path_to_import(file_path: str):
     file_path = file_path.split("site-packages/")[-1].split(".egg/")[-1]
-    if '.so' in file_path:
-        if 'python' not in file_path and 'pypy' not in file_path:
+    if ".so" in file_path:
+        if "python" not in file_path and "pypy" not in file_path:
             return
-        file_path = file_path.split('.', 1)[0]
-    elif '.pyd' in file_path:
-        file_path = file_path.split('.', 1)[0]
+        file_path = file_path.split(".", 1)[0]
+    elif ".pyd" in file_path:
+        file_path = file_path.split(".", 1)[0]
     return (
         file_path.replace("/__init__.py", "")
         .replace("/__main__.py", "")
         .replace(".py", "")
-        .replace('.pyd', '')
+        .replace(".pyd", "")
         .replace("/", ".")
     )
 
@@ -39,10 +39,14 @@ def file_path_to_import(file_path: str):
 def extract_importable_files(file_list):
     output_list = []
     for file in file_list:
-        if 'site-packages/' in file:
-            if file.rsplit('/', 1)[0]+"/__init__.py" in file_list:
+        if "site-packages/" in file:
+            if file.rsplit("/", 1)[0] + "/__init__.py" in file_list:
                 output_list.append(file)
-            elif file.endswith('.so') or file.endswith('.pyd'):
+            elif file.endswith(".so") or file.endswith(".pyd"):
+                output_list.append(file)
+            elif (
+                len(file.split("site-packages/")[-1].split(".egg/")[-1].split("/")) == 1
+            ):
                 output_list.append(file)
     return output_list
 
@@ -53,11 +57,15 @@ def get_imports_and_files(file):
 
     pkg_files: List[str] = extract_importable_files(data.get("files", []))
     # TODO: handle top level things that are stand alone .py files
-    return {
-        file_path_to_import(pkg_file)
-        for pkg_file in pkg_files
-        if any(pkg_file.endswith(k) for k in ['.py', '.pyd', '.so'])
-    } - {None}, data.get("files", [])
+    return (
+        {
+            file_path_to_import(pkg_file)
+            for pkg_file in pkg_files
+            if any(pkg_file.endswith(k) for k in [".py", ".pyd", ".so"])
+        }
+        - {None},
+        data.get("files", []),
+    )
 
 
 def write_sharded_dict(import_map):
@@ -107,10 +115,13 @@ if __name__ == "__main__":
     for future in tqdm(as_completed(futures), total=len(futures)):
         f = futures.pop(future)
         imports, files = future.result()
-        pkg = f.rsplit('-', 2)[0]
+        pkg = f.rsplit("-", 2)[0]
         for impt in imports:
             import_map[impt].add(f)
-            if not impt.startswith(pkg.replace('-', '_')) and pkg not in CLOBBER_EXCEPTIONS:
+            if (
+                not impt.startswith(pkg.replace("-", "_"))
+                and pkg not in CLOBBER_EXCEPTIONS
+            ):
                 clobbers.add(pkg)
 
     os.makedirs("import_maps", exist_ok=True)
@@ -123,11 +134,11 @@ if __name__ == "__main__":
         for file in new_files:
             f.write(f"{file}\n")
     try:
-        with open('clobbering_pkgs.json', 'r') as f:
+        with open("clobbering_pkgs.json", "r") as f:
             _clobbers = load(f)
     except FileNotFoundError:
         _clobbers = set()
     _clobbers.update(clobbers)
 
-    with open('clobbering_pkgs.json', 'w') as f:
+    with open("clobbering_pkgs.json", "w") as f:
         dump(_clobbers, f)
