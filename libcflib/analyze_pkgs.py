@@ -84,7 +84,7 @@ def write_out_maps(gn, import_map):
         for k in list(import_map):
             old_map.setdefault(k, set()).update(import_map.pop(k))
     with open(f"import_maps/{gn}.json", "w") as f:
-        dump(old_map, f, indent=2)
+        dump(old_map, f)
 
 
 if __name__ == "__main__":
