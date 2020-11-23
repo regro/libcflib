@@ -101,11 +101,9 @@ if __name__ == "__main__":
     tpe = ThreadPoolExecutor()
     all_files = set(glob.glob("artifacts/**/*.json", recursive=True))
     new_files = all_files - indexed_files
-    for i, file in enumerate(new_files):
+    for file in new_files:
         artifact_name = Path(file).name.rsplit(".", 1)[0]
         futures[tpe.submit(get_imports_and_files, file)] = artifact_name
-        if i > 10:
-            break
     for future in tqdm(as_completed(futures), total=len(futures)):
         f = futures.pop(future)
         imports, files = future.result()
