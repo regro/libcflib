@@ -2,6 +2,7 @@ import glob
 import json
 import os
 from collections import defaultdict
+from json import JSONDecodeError
 from pathlib import Path
 from typing import List
 
@@ -77,7 +78,7 @@ def write_out_maps(gn, import_map):
     try:
         with open(f"import_maps/{gn}.json", "r") as f:
             old_map = load(f)
-    except FileNotFoundError:
+    except (FileNotFoundError, JSONDecodeError):
         old_map = import_map
     else:
         for k in list(import_map):
@@ -100,30 +101,19 @@ if __name__ == "__main__":
     tpe = ThreadPoolExecutor()
     all_files = set(glob.glob("artifacts/**/*.json", recursive=True))
     new_files = all_files - indexed_files
-    for file in new_files:
-        futures[tpe.submit(get_imports_and_files, file)] = file
-    for future in tqdm(as_completed(futures), total=len(futures)):
-        file = futures.pop(future)
-
+    for i, file in enumerate(new_files):
         artifact_name = Path(file).name.rsplit(".", 1)[0]
-        parts = file.split("/")
-        pkg = parts[1]
-        # platform = parts[3]
-
+        futures[tpe.submit(get_imports_and_files, file)] = artifact_name
+        if i > 10:
+            break
+    for future in tqdm(as_completed(futures), total=len(futures)):
+        f = futures.pop(future)
         imports, files = future.result()
+        pkg = f.rsplit('-', 2)[0]
         for impt in imports:
-            if all(not impt.startswith(name) for name in [pkg, pkg.replace('-', '_')]) and pkg not in CLOBBER_EXCEPTIONS:
+            import_map[impt].add(f)
+            if not impt.startswith(pkg.replace('-', '_')) and pkg not in CLOBBER_EXCEPTIONS:
                 clobbers.add(pkg)
-            import_map[impt].add(artifact_name)
-
-        # if platform == "noarch":
-        #     for f in files:
-        #         clobber_maps[platform][f].add(pkg)
-        #         for _platform in ["linux-64", "osx-64", "win-64", "linux-aarch64", "linux-ppc64le", "osx-arm64"]:
-        #             clobber_maps[_platform][f].add(pkg)
-        # else:
-        #     for f in files:
-        #         clobber_maps[platform][f].add(pkg)
 
     os.makedirs("import_maps", exist_ok=True)
     sorted_imports = sorted(import_map.keys(), key=lambda x: x.lower())
@@ -131,11 +121,9 @@ if __name__ == "__main__":
         for gn, keys in tqdm(groupby(sorted_imports, lambda x: x[:2].lower())):
             sub_import_map = {k: import_map.pop(k) for k in keys}
             pool.submit(write_out_maps, gn, sub_import_map)
-
     with open(".indexed_files", "a") as f:
         for file in new_files:
             f.write(f"{file}\n")
-
     try:
         with open('clobbering_pkgs.json', 'r') as f:
             _clobbers = load(f)
@@ -145,16 +133,3 @@ if __name__ == "__main__":
 
     with open('clobbering_pkgs.json', 'w') as f:
         dump(_clobbers, f)
-
-    # try:
-    #     with open('file_map.json', 'r') as f:
-    #         _clobber_maps: dict = load(f)
-    # except FileNotFoundError:
-    #     _clobber_maps = dict()
-    # for platform, values in clobber_maps.items():
-    #     z = _clobber_maps.setdefault(platform, {})
-    #     for filename, pkgs in values.items():
-    #         zz = z.setdefault(filename, set())
-    #         zz.update(pkgs)
-    # with open('file_map.json', 'w') as f:
-    #     dump(clobber_maps, f)

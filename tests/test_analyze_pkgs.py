@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from libcflib.analyze_pkgs import file_path_to_import, get_imports
+from libcflib.analyze_pkgs import file_path_to_import, get_imports_and_files
 
 STREAMZ_IMPORTS = {'streamz', 'streamz.batch', 'streamz.collection', 'streamz.compatibility', 'streamz.core',
                    'streamz.dask', 'streamz.dataframe', 'streamz.dataframe.aggregations', 'streamz.dataframe.core',
@@ -73,4 +73,4 @@ def test_get_imports(tmpdir):
     fn = Path(tmpdir, 'imports.json')
     with open(fn, 'w') as f:
         json.dump({'files': STREAMZ_FILES}, f)
-    assert get_imports(str(fn)) == STREAMZ_IMPORTS
+    assert get_imports_and_files(str(fn))[0] == STREAMZ_IMPORTS
