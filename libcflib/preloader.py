@@ -122,16 +122,16 @@ def reap_package(root_path, package, dst_path, src_url, progress_callback=None):
     return harvested_data
 
 
-def reap(path, known_bad_packages=()):
+def reap(path, known_bad_packages=(), reap_function=reap_package, number_to_reap=1000):
     sorted_files = list(diff(path))
     print(f"TOTAL OUTSTANDING ARTIFACTS: {len(sorted_files)}")
-    sorted_files = sorted_files[:1000]
+    sorted_files = sorted_files[:number_to_reap]
     progress = tqdm.tqdm(total=len(sorted_files))
 
     with ThreadPoolExecutor(max_workers=20) as pool:
         futures = [
             pool.submit(
-                reap_package,
+                reap_function,
                 path,
                 package,
                 dst,

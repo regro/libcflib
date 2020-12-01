@@ -1,8 +1,19 @@
+import glob
+import io
+import json
+import tarfile
+from tempfile import TemporaryDirectory
+
 import jedi
 
 import os
 
+import requests
 from tqdm import tqdm
+
+from libcflib.harvester import harvest
+from libcflib.preloader import reap, ReapFailure
+from libcflib.tools import expand_file_and_mkdirs
 
 
 def file_path_to_import(file_path: str):
@@ -49,3 +60,47 @@ def get_all_symbol_names(top_dir):
         symbols.update(v)
         symbols.update({f"{k}.{vv.rsplit('.', 1)[-1]}" for vv in v})
     return symbols
+
+
+def harvest_imports(io_like):
+    tf = tarfile.open(fileobj=io_like, mode="r:bz2")
+    with TemporaryDirectory() as f:
+        tf.extractall(path=f)
+        return list(get_all_symbol_names(os.path.join(f, 'site-packages')))
+
+
+def reap_imports(root_path, package, dst_path, src_url, progress_callback=None):
+    if progress_callback:
+        progress_callback()
+    try:
+        resp = requests.get(src_url, timeout=60 * 2)
+        filelike = io.BytesIO(resp.content)
+        harvested_data = harvest_imports(filelike)
+        with open(
+                expand_file_and_mkdirs(os.path.join(root_path, package, dst_path)), "w"
+        ) as fo:
+            json.dump(harvested_data, fo, indent=1, sort_keys=True)
+    except Exception as e:
+        raise ReapFailure(package, src_url, str(e))
+    return harvested_data
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("root_path")
+    parser.add_argument(
+        "--known-bad-packages",
+        help="name of a json file containing a list of urls to be skipped",
+    )
+
+    args = parser.parse_args()
+    print(args)
+    if args.known_bad_packages:
+        with open(args.known_bad_packages, "r") as fo:
+            known_bad_packages = set(json.load(fo))
+    else:
+        known_bad_packages = set()
+
+    reap(args.root_path, known_bad_packages, reap_imports, number_to_reap=10)
