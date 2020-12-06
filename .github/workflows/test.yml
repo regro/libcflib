@@ -20,8 +20,8 @@ jobs:
         shell: bash -l {0}
         run: |
           conda config --set always_yes True
-          conda install --file requirements/run.txt --file requirements/tests.txt
-          python setup.py install
+          conda install --file requirements/run.txt --file requirements/tests.txt pip
+          pip install --no-deps -e .
 
       - name: lint
         shell: bash -l {0}
