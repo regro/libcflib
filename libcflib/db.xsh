@@ -75,7 +75,7 @@ class DB:
         artifactsdir = $LIBCFGRAPH_DIR + '/artifacts/'
         n_artifactsdir = len(artifactsdir)
         grep_args = ['-r', '--files-with-matches', query, artifactsdir]
-        for line in !(grep @(grep_args) | head -n @(page_num * page_size) | tail -n @(page_size)):
+        for line in !(grep @(grep_args) | sort | head -n @(page_num * page_size) | tail -n @(page_size)):
             path = line[n_artifactsdir:-1]
             artifact = self.get_artifact(path=path)
             yield artifact

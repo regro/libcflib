@@ -26,6 +26,7 @@ channel_list = [
     "https://conda.anaconda.org/conda-forge/noarch",
     "https://conda.anaconda.org/conda-forge/linux-ppc64le",
     "https://conda.anaconda.org/conda-forge/linux-aarch64",
+    "https://conda.anaconda.org/conda-forge/osx-arm64",
 ]
 
 
