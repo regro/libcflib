@@ -53,18 +53,51 @@ def file_path_to_import(file_path: str):
     return file_path.replace("/__init__.py", "").replace(".py", "").replace("/", ".")
 
 
-class bla:
-    full_name='hi'
-    type='hi'
+def single_file_extraction(file_name, top_dir):
+    from jedi.cache import clear_time_caches
+    import jedi
+    symbols_dict = {}
+    errors_dict = {}
+    # TODO: check for `__init__.py` existence or that the file is top level
+    folder_path = file_name.rpartition(top_dir + '/')[-1]
+    import_name = file_path_to_import(folder_path)
+    module_import = import_name.split('.')[0]
+    try:
+        data = jedi.Script(path=file_name, project=jedi.Project(''.join(top_dir))).complete()
+    except Exception as e:
+        print(import_name, str(e))
+        errors_dict[import_name] = {
+            "exception": str(e),
+            "traceback": str(traceback.format_exc()).split(
+                "\n",
+            ),
+        }
+        data = []
+
+    symbols_from_script = {
+        k.full_name: k.type
+        for k in data
+        # Checks that the symbol has a name and comes from the pkg in question
+        if k.full_name and module_import + "." in k.full_name
+    }
+
+    # cull statements within functions and classes, which are not importable
+    classes_and_functions = {
+        k for k, v in symbols_from_script.items() if v in ["class", "function"]
+    }
+    for k in list(symbols_from_script):
+        for cf in classes_and_functions:
+            if k != cf and k.startswith(cf) and k in symbols_from_script:
+                symbols_from_script.pop(k)
+
+    symbols_dict[import_name] = set(symbols_from_script)
+    del data
+    del symbols_from_script
+    clear_time_caches(True)
+    return symbols_dict, errors_dict
 
 
 def get_all_symbol_names(top_dir):
-    import jedi.settings
-
-    jedi.settings.fast_parser = False
-
-    from jedi.cache import clear_time_caches
-    import jedi
     # Note Jedi seems to pick up things that are protected by a
     # __name__ == '__main__' if statement
     # this could cause some over-reporting of viable imports this
@@ -75,45 +108,9 @@ def get_all_symbol_names(top_dir):
     # walk all the files looking for python files
     glob_glob = glob.glob(f'{top_dir}/**/*.py', recursive=True)
     for file_name in [k for k in glob_glob]:
-        # TODO: check for `__init__.py` existence or that the file is top level
-        folder_path = file_name.rpartition(top_dir + '/')[-1]
-        import_name = file_path_to_import(folder_path)
-        module_import = import_name.split('.')[0]
-        try:
-            data = jedi.Script(path=file_name, project=jedi.Project(''.join(top_dir))).complete()
-            # data = [bla] * 100
-        except Exception as e:
-            print(import_name)
-            errors_dict[import_name] = {
-                "exception": str(e),
-                "traceback": str(traceback.format_exc()).split(
-                    "\n",
-                ),
-            }
-            data = []
-
-        symbols_from_script = {
-            k.full_name: k.type
-            for k in data
-            # Checks that the symbol has a name and comes from the pkg in question
-            if k.full_name and module_import + "." in k.full_name
-        }
-
-        # cull statements within functions and classes, which are not importable
-        classes_and_functions = {
-            k for k, v in symbols_from_script.items() if v in ["class", "function"]
-        }
-        for k in list(symbols_from_script):
-            for cf in classes_and_functions:
-                if k != cf and k.startswith(cf) and k in symbols_from_script:
-                    symbols_from_script.pop(k)
-
-        symbols_dict[import_name] = set(symbols_from_script)
-        del data
-        del symbols_from_script
-
-    # try to fix bad jedi memory leak
-    clear_time_caches(True)
+        sd, ed = single_file_extraction(file_name, top_dir)
+        symbols_dict.update(sd)
+        errors_dict.update(ed)
 
     symbols = set()
     # handle star imports, which don't usually get added but are valid symbols
@@ -126,9 +123,9 @@ def get_all_symbol_names(top_dir):
 
 def harvest_imports(io_like):
     tf = tarfile.open(fileobj=io_like, mode="r:bz2")
-    # TODO: push dir allocation into thread
+    # TODO: push dir allocation into thread?
     with TemporaryDirectory() as f:
-        tf.extractall(path=f)
+        tf.extractall(path=f, members=[m for m in tf.getmembers() if m.name.endswith('.py')])
         symbols = set()
         errors = {}
         found_sp = False
@@ -169,11 +166,11 @@ def fetch_artifact(src_url):
 
 
 def fetch_and_run(path, pkg, dst, src_url, progess_callback=None):
-    print('hi')
+    print(f'starting {pkg}')
     filelike = fetch_artifact(src_url)
-    print('fetched')
     reap_imports(path, pkg, dst, src_url, filelike, progress_callback=progess_callback)
-    print('reaped')
+    filelike.close()
+    print(f'reaped {pkg}')
 
 
 def reap(path, known_bad_packages=(), reap_function=reap_imports, number_to_reap=1000,
@@ -203,17 +200,15 @@ def reap(path, known_bad_packages=(), reap_function=reap_imports, number_to_reap
     #         except Exception:
     #             pass
 
-    with executor(max_workers=3, kind='dask') as pool:
+    with executor(max_workers=5, kind='dask') as pool:
         futures = {pool.submit(fetch_and_run, path, package, dst, src_url,
                                # progress.update
                                ): (package, dst, src_url)
                    for package, dst, src_url in sorted_files
                    if (src_url not in known_bad_packages)}
-        for f in as_completed(futures):
+        for f in tqdm(as_completed(futures), total=len(sorted_files)):
             try:
-                initial = psutil.virtual_memory().available / 1024 ** 2
                 f.result()
-                print(initial, psutil.virtual_memory().available / 1024 **2)
             except ReapFailure as e:
                 print(f"FAILURE {e.args}")
             except Exception:
