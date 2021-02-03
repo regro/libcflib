@@ -1,6 +1,6 @@
 cerberus
 tornado
-xonsh
+xonsh==0.9.24
 zict
 tqdm
 toolz
