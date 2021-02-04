@@ -174,4 +174,4 @@ if __name__ == "__main__":
     else:
         known_bad_packages = set()
 
-    reap(args.root_path, known_bad_packages, n_pkgs=parser.n_pkgs)
+    reap(args.root_path, known_bad_packages, n_pkgs=args.n_pkgs)
