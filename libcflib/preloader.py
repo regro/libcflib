@@ -9,6 +9,8 @@ import os
 import glob
 from collections import defaultdict
 from typing import Dict, Set
+import subprocess
+import tempfile
 
 from concurrent.futures import as_completed, ThreadPoolExecutor
 
@@ -100,9 +102,16 @@ def reap_package(root_path, package, dst_path, src_url, progress_callback=None):
     if progress_callback:
         progress_callback()
     try:
-        resp = requests.get(src_url, timeout=60 * 2)
-        filelike = io.BytesIO(resp.content)
-        harvested_data = harvest(filelike)
+        # resp = requests.get(src_url, timeout=60 * 2)
+        # filelike = io.BytesIO(resp.content)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            subprocess.run(
+                f"pushd {tmpdir} && wget {src_url}",
+                shell=True,
+                check=True,
+            )
+            with open(os.path.join(tmpdir, os.path.basename(src_url)), "rb") as filelike:
+                harvested_data = harvest(filelike)
         with open(
             expand_file_and_mkdirs(os.path.join(root_path, package, dst_path)), "w"
         ) as fo:
