@@ -106,7 +106,7 @@ def reap_package(root_path, package, dst_path, src_url, progress_callback=None):
         # filelike = io.BytesIO(resp.content)
         with tempfile.TemporaryDirectory() as tmpdir:
             subprocess.run(
-                f"pushd {tmpdir} && wget {src_url}",
+                f"cd {tmpdir} && wget {src_url}",
                 shell=True,
                 check=True,
             )
