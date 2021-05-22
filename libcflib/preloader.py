@@ -106,7 +106,7 @@ def reap_package(root_path, package, dst_path, src_url, progress_callback=None):
         # filelike = io.BytesIO(resp.content)
         with tempfile.TemporaryDirectory() as tmpdir:
             subprocess.run(
-                f"cd {tmpdir} && wget {src_url}",
+                f"cd {tmpdir} && wget --quiet {src_url}",
                 shell=True,
                 check=True,
             )
@@ -135,7 +135,7 @@ def reap_package(root_path, package, dst_path, src_url, progress_callback=None):
 def reap(path, known_bad_packages=()):
     sorted_files = list(diff(path))
     print(f"TOTAL OUTSTANDING ARTIFACTS: {len(sorted_files)}")
-    sorted_files = sorted_files[:1000]
+    sorted_files = sorted_files[:10]
     progress = tqdm.tqdm(total=len(sorted_files))
 
     with ThreadPoolExecutor(max_workers=20) as pool:
