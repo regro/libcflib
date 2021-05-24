@@ -132,10 +132,10 @@ def reap_package(root_path, package, dst_path, src_url, progress_callback=None):
     return harvested_data
 
 
-def reap(path, known_bad_packages=()):
+def reap(path, known_bad_packages=(), n_pkgs=1000):
     sorted_files = list(diff(path))
     print(f"TOTAL OUTSTANDING ARTIFACTS: {len(sorted_files)}")
-    sorted_files = sorted_files[:1000]
+    sorted_files = sorted_files[:n_pkgs]
     progress = tqdm.tqdm(total=len(sorted_files))
 
     with ThreadPoolExecutor(max_workers=20) as pool:
@@ -169,6 +169,11 @@ if __name__ == "__main__":
         "--known-bad-packages",
         help="name of a json file containing a list of urls to be skipped",
     )
+    parser.add_argument(
+        "--n_pkgs",
+        help="number of pkgs to run the preloader on",
+        default=100
+    )
 
     args = parser.parse_args()
     print(args)
@@ -178,4 +183,4 @@ if __name__ == "__main__":
     else:
         known_bad_packages = set()
 
-    reap(args.root_path, known_bad_packages)
+    reap(args.root_path, known_bad_packages, n_pkgs=args.n_pkgs)
