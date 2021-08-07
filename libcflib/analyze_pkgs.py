@@ -110,8 +110,9 @@ if __name__ == "__main__":
     all_files = set(glob.glob("artifacts/**/*.json", recursive=True))
     new_files = all_files - indexed_files
     for file in new_files:
-        artifact_name = Path(file).name.rsplit(".", 1)[0]
-        futures[tpe.submit(get_imports_and_files, file)] = artifact_name
+        if os.path.exists(file) and os.path.isfile(file):
+            artifact_name = Path(file).name.rsplit(".", 1)[0]
+            futures[tpe.submit(get_imports_and_files, file)] = artifact_name
     for future in tqdm(as_completed(futures), total=len(futures)):
         f = futures.pop(future)
         imports, files = future.result()
