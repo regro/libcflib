@@ -18,6 +18,12 @@ CLOBBER_EXCEPTIONS = {
     "mongo",
 }
 
+NUM_LETTERS = 5
+
+
+def _get_head_letters(name):
+    return name[:min(NUM_LETTERS, len(name))].lower()
+
 
 def file_path_to_import(file_path: str):
     file_path = file_path.split("site-packages/")[-1].split(".egg/")[-1]
@@ -69,7 +75,7 @@ def get_imports_and_files(file):
 
 
 def write_sharded_dict(import_map):
-    for k, v in groupby(import_map, lambda x: x[:2]):
+    for k, v in groupby(import_map, lambda x: _get_head_letters(x)):
         with open(f"import_maps/{k}.json", "w") as f:
             dump({sk: import_map[sk] for sk in v}, f)
 
@@ -128,7 +134,7 @@ if __name__ == "__main__":
     os.makedirs("import_maps", exist_ok=True)
     sorted_imports = sorted(import_map.keys(), key=lambda x: x.lower())
     with tpe as pool:
-        for gn, keys in tqdm(groupby(sorted_imports, lambda x: x[:2].lower())):
+        for gn, keys in tqdm(groupby(sorted_imports, lambda x: _get_head_letters(x))):
             sub_import_map = {k: import_map.pop(k) for k in keys}
             pool.submit(write_out_maps, gn, sub_import_map)
     with open(".indexed_files", "a") as f:
@@ -143,3 +149,6 @@ if __name__ == "__main__":
 
     with open("clobbering_pkgs.json", "w") as f:
         dump(_clobbers, f)
+
+    with open("import_maps_meta.json", "w") as f:
+        dump({"num_letters": NUM_LETTERS}, f)
