@@ -154,7 +154,7 @@ if __name__ == "__main__":
         sorted_imports = sorted(import_map.keys(), key=lambda x: x.lower())
         for gn, keys in tqdm(groupby(sorted_imports, lambda x: _get_head_letters(x))):
             sub_import_map = {k: import_map.pop(k) for k in keys}
-            pool.submit(write_out_maps, gn, sub_import_map)
+            tpe.submit(write_out_maps, gn, sub_import_map)
 
     with open(".indexed_files", "a") as f:
         for file in files_indexed:
