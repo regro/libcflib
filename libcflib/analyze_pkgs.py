@@ -1,3 +1,4 @@
+import sys
 import glob
 import json
 import os
@@ -111,25 +112,43 @@ if __name__ == "__main__":
 
     clobbers = set()
 
+    if len(sys.argv) > 1:
+        n_max = int(sys.argv[1])
+    else:
+        n_max = 10_000
+
     futures = {}
-    tpe = ThreadPoolExecutor()
     all_files = set(glob.glob("artifacts/**/*.json", recursive=True))
     new_files = all_files - indexed_files
-    for file in new_files:
-        if os.path.exists(file) and os.path.isfile(file):
-            artifact_name = Path(file).name.rsplit(".", 1)[0]
-            futures[tpe.submit(get_imports_and_files, file)] = artifact_name
-    for future in tqdm(as_completed(futures), total=len(futures)):
-        f = futures.pop(future)
-        imports, files = future.result()
-        pkg = f.rsplit("-", 2)[0]
-        for impt in imports:
-            import_map[impt].add(f)
-            if (
-                not impt.startswith(pkg.replace("-", "_"))
-                and pkg not in CLOBBER_EXCEPTIONS
-            ):
-                clobbers.add(pkg)
+
+    with ThreadPoolExecutor(max_workers=4) as tpe:
+        n_sub = 0
+        for file in tqdm(
+            new_files, total=min(n_max, len(new_files)), desc="submitting jobs"
+        ):
+            if os.path.exists(file) and os.path.isfile(file):
+                artifact_name = Path(file).name.rsplit(".", 1)[0]
+                futures[tpe.submit(get_imports_and_files, file)] = (artifact_name, file)
+                n_sub += 1
+
+            if n_sub == n_max:
+                break
+
+        del new_files
+
+        files_indexed = set()
+        for future in tqdm(as_completed(futures), total=len(futures), desc="getting results"):
+            f, fext = futures.pop(future)
+            files_indexed.add(fext)
+            imports, files = future.result()
+            pkg = f.rsplit("-", 2)[0]
+            for impt in imports:
+                import_map[impt].add(f)
+                if (
+                    not impt.startswith(pkg.replace("-", "_"))
+                    and pkg not in CLOBBER_EXCEPTIONS
+                ):
+                    clobbers.add(pkg)
 
     os.makedirs("import_maps", exist_ok=True)
     sorted_imports = sorted(import_map.keys(), key=lambda x: x.lower())
@@ -138,7 +157,7 @@ if __name__ == "__main__":
             sub_import_map = {k: import_map.pop(k) for k in keys}
             pool.submit(write_out_maps, gn, sub_import_map)
     with open(".indexed_files", "a") as f:
-        for file in new_files:
+        for file in files_indexed:
             f.write(f"{file}\n")
     try:
         with open("clobbering_pkgs.json", "r") as f:
