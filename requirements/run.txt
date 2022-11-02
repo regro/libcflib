@@ -1,3 +1,4 @@
+python==3.9.*
 cerberus
 tornado
 xonsh==0.9.24
