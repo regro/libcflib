@@ -37,16 +37,16 @@ def fetch_arch(arch):
     print(f"Fetching {arch}")
     r = requests.get(f"{arch}/repodata.json.bz2")
     repodata = json.load(bz2.BZ2File(io.BytesIO(r.content)))
-    for p, v in repodata["packages"].items():
-        package_url = f"{arch}/{p}"
-        file_name = package_url.replace("https://conda.anaconda.org/", "").replace(
-            ".tar.bz2", ".json"
-        )
-        yield v["name"], file_name, package_url
     for p, v in repodata["packages.conda"].items():
         package_url = f"{arch}/{p}"
         file_name = package_url.replace("https://conda.anaconda.org/", "").replace(
             ".conda", ".json"
+        )
+        yield v["name"], file_name, package_url
+    for p, v in repodata["packages"].items():
+        package_url = f"{arch}/{p}"
+        file_name = package_url.replace("https://conda.anaconda.org/", "").replace(
+            ".tar.bz2", ".json"
         )
         yield v["name"], file_name, package_url
 
@@ -147,7 +147,7 @@ def reap_package(root_path, package, dst_path, src_url, progress_callback=None):
 def reap(path, known_bad_packages=()):
     sorted_files = list(diff(path))
     print(f"TOTAL OUTSTANDING ARTIFACTS: {len(sorted_files)}")
-    sorted_files = sorted_files[:100]
+    sorted_files = sorted_files[:200]
     progress = tqdm.tqdm(total=len(sorted_files))
 
     with ThreadPoolExecutor(max_workers=20) as pool:
