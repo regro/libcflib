@@ -13,3 +13,4 @@ networkx
 requests
 ruamel_yaml
 wget
+conda-package-streaming
