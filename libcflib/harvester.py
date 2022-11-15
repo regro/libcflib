@@ -51,12 +51,16 @@ def harvest_dot_conda(io_like, filename):
     data = harvest_tarfile(stream)
     stream.close()
 
+    data["conda_pkg_format"] = "2"
+
     return data
 
 
 def harvest(io_like):
     tf = tarfile.open(fileobj=io_like, mode="r:bz2")
-    return harvest_tarfile(tf)
+    data = harvest_tarfile(tf)
+    data["conda_pkg_format"] = None
+    return data
 
 
 def harvest_tarfile(tf_or_stream):
