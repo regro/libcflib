@@ -34,9 +34,21 @@ channel_list = [
 
 def fetch_arch(arch):
     # Generate a set a urls to generate for an channel/arch combo
-    print(f"Fetching {arch}")
+    print(f"Fetching {arch}", flush=True)
     r = requests.get(f"{arch}/repodata.json.bz2")
     repodata = json.load(bz2.BZ2File(io.BytesIO(r.content)))
+    print(
+        "    found %d .conda artifacts" % (
+            len(repodata["packages.conda"])
+        ),
+        flush=True,
+    )
+    print(
+        "    found %d .tar.bz2 artifacts" % (
+            len(repodata["packages"])
+        ),
+        flush=True,
+    )
     for p, v in repodata["packages.conda"].items():
         package_url = f"{arch}/{p}"
         file_name = package_url.replace("https://conda.anaconda.org/", "").replace(
