@@ -17,7 +17,7 @@ from concurrent.futures import as_completed, ThreadPoolExecutor
 import requests
 import tqdm
 
-from .harvester import harvest
+from .harvester import harvest, harvest_dot_conda
 from .tools import expand_file_and_mkdirs
 
 
@@ -41,6 +41,12 @@ def fetch_arch(arch):
         package_url = f"{arch}/{p}"
         file_name = package_url.replace("https://conda.anaconda.org/", "").replace(
             ".tar.bz2", ".json"
+        )
+        yield v["name"], file_name, package_url
+    for p, v in repodata["packages.conda"].items():
+        package_url = f"{arch}/{p}"
+        file_name = package_url.replace("https://conda.anaconda.org/", "").replace(
+            ".conda", ".json"
         )
         yield v["name"], file_name, package_url
 
@@ -110,8 +116,14 @@ def reap_package(root_path, package, dst_path, src_url, progress_callback=None):
                 shell=True,
                 check=True,
             )
-            with open(os.path.join(tmpdir, os.path.basename(src_url)), "rb") as filelike:
-                harvested_data = harvest(filelike)
+            pkg_pth = os.path.join(tmpdir, os.path.basename(src_url))
+            with open(pkg_pth, "rb") as filelike:
+                if pkg_pth.endswith(".tar.bz2"):
+                    harvested_data = harvest(filelike)
+                elif pkg_pth.endswith(".conda"):
+                    harvested_data = harvest_dot_conda(filelike, pkg_pth)
+                else:
+                    raise RuntimeError(f"File '{pkg_pth}' is not a recognized conda format!")
         with open(
             expand_file_and_mkdirs(os.path.join(root_path, package, dst_path)), "w"
         ) as fo:

@@ -113,7 +113,7 @@ class Artifact(Model):
         arch : str or None, optional
             Architeture name
         name : str or None, optional
-            Fully resolved name, without *.tar.bz2 or *.json
+            Fully resolved name, without *.conda, *.tar.bz2 or *.json
         path : str or None, optional
             Path to artifact file. This is relative to the libcfgraph repo dir.
         """
@@ -129,6 +129,8 @@ class Artifact(Model):
                 name = name[:-8]
             elif name.endswith(".json"):
                 name = name[:-5]
+            elif name.endswith(".conda"):
+                name - name[:-6]
             self._path = os.path.join(pkg, channel, arch, name + ".json")
         else:
             msg = "Artifact path or pkg, channel, arch and name must be given. "

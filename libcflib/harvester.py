@@ -43,56 +43,74 @@ ruamel_yaml.add_constructor(
 )
 
 
+def harvest_dot_conda(io_like, filename):
+    from conda_package_streaming import package_streaming
+    stream = package_streaming.stream_conda_component(
+        filename, io_like, component=package_streaming.CondaComponent.info
+    )
+    data = harvest_tarfile(stream)
+    stream.close()
+
+    return data
+
+
 def harvest(io_like):
     tf = tarfile.open(fileobj=io_like, mode="r:bz2")
+    return harvest_tarfile(tf)
 
-    # info/files
-    file_listing = tf.extractfile("info/files").readlines()
-    file_listing = (fn.decode("utf8").strip() for fn in file_listing if fn)
-    file_listing = [fn for fn in file_listing if filter_file(fn)]
 
-    # info/recipe/meta.yaml
-    try:
-        rendered_recipe = ruamel_yaml.safe_load(tf.extractfile("info/recipe/meta.yaml"))
-    except ScannerError:
-        # Non parseable
-        rendered_recipe = {}
-    except KeyError:
-        # older artifacts have a meta.yaml in another location
-        try:
-            rendered_recipe = ruamel_yaml.safe_load(tf.extractfile("info/meta.yaml"))
-        except ScannerError:
-            # Non parseable
-            rendered_recipe = {}
+def harvest_tarfile(tf_or_stream):
+    rendered_recipe = {}
+    index = {}
+    about = {}
+    raw_recipe = ""
+    conda_build_config = {}
+    raw_recipe_backup = ""
 
-    try:
-        raw_recipe = (
-            tf.extractfile("info/recipe/meta.yaml.template").read().decode("utf8")
-        )
-    except KeyError:
-        raw_recipe = tf.extractfile("info/recipe/meta.yaml").read().decode("utf8")
+    for _data in tf_or_stream:
+        if isinstance(_data, tarfile.TarInfo):
+            mem = _data
+            tf = tf_or_stream
+        else:
+            tf, mem = _data
 
-    try:
-        conda_build_config = ruamel_yaml.safe_load(
-            tf.extractfile("info/recipe/conda_build_config.yaml")
-        )
-    except KeyError:
-        conda_build_config = {}
-
-    try:
-        about = json.load(tf.extractfile("info/about.json"))
-    except KeyError:
-        about = {}
-    index = json.load(tf.extractfile("info/index.json"))
+        if mem.name == "info/files":
+            # info/files
+            file_listing = tf.extractfile(mem).readlines()
+            file_listing = [fn.decode("utf8").strip() for fn in file_listing if fn]
+            file_listing = [fn for fn in file_listing if filter_file(fn)]
+        elif mem.name == "info/recipe/meta.yaml":
+            raw_recipe_backup = tf.extractfile(mem).read(mem.size).decode("utf8")
+            # info/recipe/meta.yaml
+            try:
+                rendered_recipe = ruamel_yaml.safe_load(raw_recipe_backup)
+            except ScannerError:
+                # Non parseable
+                rendered_recipe = {}
+        elif mem.name == "info/meta.yaml":
+            # older artifacts have a meta.yaml in another location
+            try:
+                rendered_recipe = ruamel_yaml.safe_load(tf.extractfile(mem).read(mem.size))
+            except ScannerError:
+                # Non parseable
+                rendered_recipe = {}
+        elif mem.name == "info/about.json":
+            about = json.loads(tf.extractfile(mem).read(mem.size))
+        elif mem.name == "info/index.json":
+            index = json.loads(tf.extractfile(mem).read(mem.size))
+        elif mem.name == "info/recipe/meta.yaml.template":
+            raw_recipe = tf.extractfile(mem).read(mem.size).decode("utf8")
+        elif mem.name == "info/recipe/conda_build_config.yaml":
+            conda_build_config = ruamel_yaml.safe_load(tf.extractfile(mem).read(mem.size))
 
     return {
         "metadata_version": METADATA_VERSION,
-        "name": index["name"],
-        "version": index["version"],
+        "name": index.get("name", ""),
+        "version": index.get("version", ""),
         "index": index,
         "about": about,
         "rendered_recipe": rendered_recipe,
-        "raw_recipe": raw_recipe,
+        "raw_recipe": raw_recipe if len(raw_recipe) > 0 else raw_recipe_backup,
         "conda_build_config": conda_build_config,
         "files": file_listing,
     }
@@ -100,7 +118,12 @@ def harvest(io_like):
 
 def harvest_from_filename(filename):
     with open(filename, "rb") as fo:
-        return harvest(fo)
+        if filename.endswith(".tar.bz2"):
+            return harvest(fo)
+        elif filename.endswith(".conda"):
+            return harvest_dot_conda(fo, filename)
+        else:
+            raise RuntimeError(f"File '{filename}' is not a recognized conda format!")
 
 
 if __name__ == "__main__":
