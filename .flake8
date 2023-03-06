@@ -6,5 +6,4 @@ exclude =
     *.egg-info
     */__pycache__/*
 ignore =
-    *.py I100 W503
-    ./libcflib/__init__.py E402
+    I100 W503

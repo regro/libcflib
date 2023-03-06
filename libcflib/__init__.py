@@ -1,4 +1,5 @@
 """The libcflib package."""
+# flake8: noqa
 # setup xonsh
 from xonsh.main import setup
 
@@ -11,4 +12,4 @@ from libcflib.environ import setup
 setup()
 del setup
 
-from ._version import __version__  # noqa
+from ._version import __version__
