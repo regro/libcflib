@@ -4,7 +4,14 @@ import os
 from setuptools import setup
 
 
-VERSION = '0.0.8'
+__version__ = None
+pth = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)),
+    "libcflib",
+    "_version.py")
+with open(pth, 'r') as fp:
+    exec(fp.read())
+VERSION = __version__
 
 install_file = os.path.join(os.path.dirname(__file__), "requirements", "run.txt")
 with open(install_file) as f:
@@ -42,5 +49,4 @@ setup_kwargs = {
     "install_requires": install_reqs,
 }
 
-if __name__ == "__main__":
-    setup(**setup_kwargs)
+setup(**setup_kwargs)
