@@ -1,5 +1,6 @@
 import sys
 import glob
+import hashlib
 import json
 import os
 from collections import defaultdict
@@ -11,7 +12,7 @@ from tqdm import tqdm
 
 from libcflib.jsonutils import dump, load
 from concurrent.futures import as_completed, ThreadPoolExecutor
-from itertools import groupby
+from itertools import groupby, chain
 
 CLOBBER_EXCEPTIONS = {
     "matplotlib",
@@ -25,10 +26,18 @@ IMPORT_TO_PKG_DIR = "import_to_pkg_maps"
 IMPORT_TO_PKG_DIR_INDEX = f".{IMPORT_TO_PKG_DIR}_indexed_files"
 IMPORT_TO_PKG_DIR_CLOBBERING = f"{IMPORT_TO_PKG_DIR}_clobbering_pkgs.json"
 IMPORT_TO_PKG_DIR_META = f"{IMPORT_TO_PKG_DIR}_meta.json"
+IMPORT_TO_PKG_DIR_SHARD = 10
 
 
 def _get_head_letters(name):
     return name[:min(NUM_LETTERS, len(name))].lower()
+
+
+def _fname_to_index(fname):
+    return (
+        abs(int(hashlib.sha1(fname.encode("utf-8")).hexdigest(), 16))
+        % IMPORT_TO_PKG_DIR_SHARD
+    )
 
 
 def file_path_to_import(file_path: str):
@@ -113,7 +122,14 @@ if __name__ == "__main__":
         with open(IMPORT_TO_PKG_DIR_INDEX, "r") as f:
             indexed_files = {ff.strip() for ff in f.readlines()}
     except FileNotFoundError:
+        # sharded variant
         indexed_files = set()
+        try:
+            for i in range(IMPORT_TO_PKG_DIR_SHARD):
+                with open(f"{IMPORT_TO_PKG_DIR}_{i}", "r") as f:
+                    indexed_files.update({ff.strip() for ff in f.readlines()})
+        except FileNotFoundError:
+            indexed_files = set()
 
     clobbers = set()
 
@@ -161,6 +177,15 @@ if __name__ == "__main__":
             sub_import_map = {k: import_map.pop(k) for k in keys}
             tpe.submit(write_out_maps, gn, sub_import_map)
 
+    fnames_by_index = {}
+    for fname in chain(indexed_files, files_indexed):
+        index = _fname_to_index(fname)
+        fnames_by_index.setdefault(index, set()).add(fname)
+
+    for index, fnames in fnames_by_index.items():
+        with open(f"{IMPORT_TO_PKG_DIR_INDEX}_{index}", "w") as fp:
+            fp.write("\n".join(sorted(fnames)))
+
     with open(IMPORT_TO_PKG_DIR_INDEX, "a") as f:
         for file in files_indexed:
             f.write(f"{file}\n")
@@ -175,4 +200,4 @@ if __name__ == "__main__":
         dump(_clobbers, f)
 
     with open(IMPORT_TO_PKG_DIR_META, "w") as f:
-        dump({"num_letters": NUM_LETTERS}, f)
+        dump({"num_letters": NUM_LETTERS, "n_files": IMPORT_TO_PKG_DIR_SHARD}, f)
