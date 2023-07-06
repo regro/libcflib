@@ -10,6 +10,7 @@ from typing import List
 
 from tqdm import tqdm
 
+from libcflib.logger import LOGGER
 from libcflib.jsonutils import dump, load
 from concurrent.futures import as_completed, ThreadPoolExecutor
 from itertools import groupby, chain
@@ -126,9 +127,13 @@ if __name__ == "__main__":
         indexed_files = set()
         try:
             for i in range(IMPORT_TO_PKG_DIR_SHARD):
-                with open(f"{IMPORT_TO_PKG_DIR}_{i}", "r") as f:
+                with open(f"{IMPORT_TO_PKG_DIR_INDEX}_{i}", "r") as f:
                     indexed_files.update({ff.strip() for ff in f.readlines()})
         except FileNotFoundError:
+            LOGGER.log(
+                "no index files found, starting from scratch", 
+                category="import-to-pkg"
+            )
             indexed_files = set()
 
     clobbers = set()
