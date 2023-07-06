@@ -131,7 +131,7 @@ if __name__ == "__main__":
                     indexed_files.update({ff.strip() for ff in f.readlines()})
         except FileNotFoundError:
             LOGGER.log(
-                "no index files found, starting from scratch", 
+                "no index files found, starting from scratch",
                 category="import-to-pkg"
             )
             indexed_files = set()
