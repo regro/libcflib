@@ -2,7 +2,7 @@ python==3.10.*
 pip
 cerberus
 tornado
-xonsh==0.9
+xonsh=0.9
 zict
 tqdm
 toolz
