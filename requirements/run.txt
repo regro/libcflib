@@ -1,8 +1,8 @@
-python==3.9.*
+python==3.10.*
 pip
 cerberus
 tornado
-xonsh==0.9.24
+xonsh<0.12
 zict
 tqdm
 toolz
