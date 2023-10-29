@@ -17,7 +17,6 @@ jobs:
           channels: conda-forge
           channel-priority: strict
           show-channel-urls: true
-          use-mamba: true
 
       - name: config conda and install
         shell: bash -l {0}
